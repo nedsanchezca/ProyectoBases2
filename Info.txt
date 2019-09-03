@@ -1,0 +1,16 @@
+Thrasher y Jairo:
+    -> Revisar y corregir modelo Entidad-Relación.
+    -> Modelo relacional.
+    -> Diccionario de datos.
+
+Juancho y Gabi:
+    -> Terminar documentación de casos de uso.
+    -> Identificación de los actores del sistema y acciones permitidas para cada uno.
+    -> Tabla de usuarios, roles, privilegios.
+
+Nestor:
+    -> Interfaz gráfica.
+
+
+Pendiente:
+    -> Descripción del modelo de arquitectura y de las herramientas a utilizar en cada capa
