@@ -20,3 +20,15 @@ Estados de un pedido:
 'Cancelado' = C;
 'PAGO' = P;
 'NO PAGO' = N;
+
+Tipo de ID persona:
+
+Tarjeta identidad = T;
+Cedula = C;
+Pasaporte extranjero = P;
+
+Genero:
+
+Masculino = M;
+Femenino = F;
+Otro = O;
