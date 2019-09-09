@@ -14,3 +14,9 @@ Nestor:
 
 Pendiente:
     -> Descripción del modelo de arquitectura y de las herramientas a utilizar en cada capa
+
+Estados de un pedido:
+
+'Cancelado' = C;
+'PAGO' = P;
+'NO PAGO' = N;
