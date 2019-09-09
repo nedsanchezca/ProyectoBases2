@@ -15,20 +15,26 @@ Nestor:
 Pendiente:
     -> Descripción del modelo de arquitectura y de las herramientas a utilizar en cada capa
 
-Estados de un pedido:
+Faltantes del modelo relacional:
+    -> Relacion para calificar un representante de ventas
 
-'Cancelado' = C;
-'PAGO' = P;
-'NO PAGO' = N;
+NOTA:
+    -> Se toma la decision de almacenar el IVA en la app
+
+Calificación de un representante de ventas:
+    - Decimal entre 0,0 y 5,0
+
+Estados de un pedido:
+    'Cancelado' = C;
+    'PAGO' = P;
+    'NO PAGO' = N;
 
 Tipo de ID persona:
-
-Tarjeta identidad = T;
-Cedula = C;
-Pasaporte extranjero = P;
+    Tarjeta identidad = T;
+    Cedula = C;
+    Pasaporte extranjero = P;
 
 Genero:
-
-Masculino = M;
-Femenino = F;
-Otro = O;
+    Masculino = M;
+    Femenino = F;
+    Otro = O;
