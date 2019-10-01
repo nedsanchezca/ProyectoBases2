@@ -89,7 +89,7 @@ end;
 CREATE TABLE  "calificacion"
 (
 	"K_ID" NUMBER(7) NOT NULL,    -- Identificacion de cada una de las calificaciones
-	"V_VALORACION" NUMBER(1) NOT NULL,    -- Valor de la calificación
+	"V_VALORACION" NUMBER(1) NOT NULL,    -- Valor de la calificaciï¿½n
 	"N_COMENTARIO" VARCHAR2(200) NULL,    -- Comentario de la venta
 	"F_N_FACTURA" NUMBER(7) NOT NULL    -- Almacena la llave foranea de la factura
 )
@@ -127,7 +127,7 @@ CREATE TABLE  "detalle_pedido"
 	"K_ITEM" NUMBER(4) NOT NULL,    -- Numero de identificacion del producto
 	"V_CANTIDAD" NUMBER(5) NOT NULL,    -- Indica la candidad comprada de determinado producto
 	"F_N_FACTURA" NUMBER(7) NOT NULL,    -- Relaciona el detalle con la factura a la que pertenece
-	"F_ID_INVENTARIO" NUMBER(8) NOT NULL    -- Relaciona el detalle de cada pedido con el inventario de la región
+	"F_ID_INVENTARIO" NUMBER(8) NOT NULL    -- Relaciona el detalle de cada pedido con el inventario de la regiï¿½n
 )
 ;
 
@@ -216,7 +216,7 @@ COMMENT ON TABLE  "calificacion" IS 'Contiene los registros de cada calificacion
 COMMENT ON COLUMN  "calificacion"."K_ID" IS 'Identificacion de cada una de las calificaciones'
 ;
 
-COMMENT ON COLUMN  "calificacion"."V_VALORACION" IS 'Valor de la calificación'
+COMMENT ON COLUMN  "calificacion"."V_VALORACION" IS 'Valor de la calificaciï¿½n'
 ;
 
 COMMENT ON COLUMN  "calificacion"."N_COMENTARIO" IS 'Comentario de la venta'
@@ -282,7 +282,7 @@ COMMENT ON COLUMN  "detalle_pedido"."V_CANTIDAD" IS 'Indica la candidad comprada
 COMMENT ON COLUMN  "detalle_pedido"."F_N_FACTURA" IS 'Relaciona el detalle con la factura a la que pertenece'
 ;
 
-COMMENT ON COLUMN  "detalle_pedido"."F_ID_INVENTARIO" IS 'Relaciona el detalle de cada pedido con el inventario de la región'
+COMMENT ON COLUMN  "detalle_pedido"."F_ID_INVENTARIO" IS 'Relaciona el detalle de cada pedido con el inventario de la regiï¿½n'
 ;
 
 COMMENT ON TABLE  "inventario" IS 'Almacena los productos de una region'
@@ -628,12 +628,12 @@ ALTER TABLE  "pedido"
 
 ALTER TABLE  "producto_subcategoria" 
  ADD CONSTRAINT "FK_producto_subcategoria_produ"
-	FOREIGN KEY ("F_CODIGO_PRODUCTO") REFERENCES   ("K_CODIGO_PRODUCTO")
+	FOREIGN KEY ("F_CODIGO_PRODUCTO") REFERENCES  "producto" ("K_CODIGO_PRODUCTO")
 ;
 
 ALTER TABLE  "producto_subcategoria" 
  ADD CONSTRAINT "FK_producto_subcategoria_subca"
-	FOREIGN KEY ("F_ID") REFERENCES   ("K_ID")
+	FOREIGN KEY ("F_ID") REFERENCES  "subcategoria" ("K_ID")
 ;
 
 ALTER TABLE  "rep_ventas" 
