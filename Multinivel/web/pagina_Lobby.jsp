@@ -298,6 +298,9 @@
                 <li class="nav-item">
                     <a class="nav-link disabled" href="formulario_Venta.html">Venta</a>
                 </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="index.html">Salir</a>
+                </li>
             </ul>
         </div>
     </nav>

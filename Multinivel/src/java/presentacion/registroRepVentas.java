@@ -44,35 +44,20 @@ public class registroRepVentas extends HttpServlet {
         
         Date fecha = new Date();
         repI.setTipoId(request.getParameter("K_TIPO_ID").charAt(0));
-        System.out.print(repI.getTipoId());
         repI.setIdRep(request.getParameter("K_NUMERO_ID"));
-        System.out.print(repI.getIdRep());
         repI.setApellido(request.getParameter("N_APELLIDO"));
-        System.out.print(repI.getApellido());
         repI.setNombre(request.getParameter("N_NOMBRE"));
-        System.out.print(repI.getNombre());
         repI.setCiudad(request.getParameter("C_CIUDAD"));
-        System.out.print(repI.getCiudad());
         repI.setCorreo(request.getParameter("E_CORREO"));
-        System.out.print(repI.getCorreo());
         repI.setGenero(request.getParameter("I_GENERO").substring(0, 1));
-        System.out.print(repI.getGenero());
         repI.setTelefono(new BigDecimal(request.getParameter("TEL")));
-        System.out.print(repI.getTelefono());
         repI.setFechaNacimiento(request.getParameter("D_FECHA_NACIMIENTO"));
-        System.out.print(repI.getFechaNacimiento());
         repI.setFechaContrato(fecha.getYear()+"-"+fecha.getMonth()+"-"+fecha.getDay());
-        System.out.print(repI.getFechaContrato());
         repI.setDireccion(request.getParameter("A_DIRECCION"));
-        System.out.print(repI.getDireccion());
         repI.setCodigoPostal(rep.getCodigoPostal());
-        System.out.print(repI.getCodigoPostal());
         repI.setCaptadorId(rep.getIdRep());
-        System.out.print(repI.getCaptadorId());
         repI.setCaptadorTipo(Character.toString(rep.getTipoId()));
-        System.out.print(repI.getCaptadorTipo());
         repI.setClasificacion(1);
-        System.out.print(repI.getClasificacion());
         SQLException ex = repD.incluirRepresentante(repI);
         if(ex==null){
             request.getSession().setAttribute("rep", rep);
@@ -80,7 +65,7 @@ public class registroRepVentas extends HttpServlet {
         }else{
             try (PrintWriter out = response.getWriter()) {
                 /* TODO output your page here. You may use following sample code. */
-                out.println("<meta http-equiv='refresh' content='3;URL=login.html'>");
+                out.println("<meta http-equiv='refresh' content='3;URL=pagina_Lobby.jsp'>");
                 out.println("<html>");
                 out.println("<head>");
                 out.println("<title>Servlet testing</title>");            
