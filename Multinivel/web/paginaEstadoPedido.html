@@ -189,78 +189,39 @@
             </div>
         </nav>
         <div class="container">
-            <h1>Ingreso de pedido de productos</h1>
-        </div>
-
-
-        <div class="container">
-            <div class="row" id = "header-ingreso-producto">
-                <div class = "column">
-                    <h4>Código del producto</h4>
-                </div>
-                <div class="column">
-                    <input type="text" >
-                </div>
-                <div class="column">
-                    <h4>Cantidad</h4>
-                </div>
-                <div class="column">
-                    <input type="text">
-                </div> 
-                <div class="column">
-                    <h4>Región</h4>
-                </div>
-                <div class="column">
-                    <a class="btn btn-secondary dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                        ----
-                    </a>
-                    <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
-                        <a class="dropdown-item" href="#">Bogotá</a>
-                        <a class="dropdown-item" href="#">Amazonía</a>
-                        
-                    </div>
-                </div>
-                <div class="column">
-                    <button type="button" class="btn btn-dark">agregar</button>
-                </div>   
-            </div>
+            <h1 class="display-1">Estado de los pedidos</h1>
         </div>
 
         <table class="table">
             <thead>
                 <tr>
                     <th scope="col">#</th>
-                    <th scope="col">Codigo</th>
-                    <th scope="col">Producto</th>
-                    <th scope="col">Cantidad</th>
-                    <th scope="col">Precio neto</th>
-                    <th scope="col">Iva</th>
-                    <th scope="col">Total</th>
-                    <th scope="col">      </th>
+                    <th scope="col">Pedido</th>
+                    <th scope="col">Fecha</th>
+                    <th scope="col">Venta Total</th>
+                    <th scope="col">Modificar</th>
+                    <th scope="col">Cancelar</th>
                 </tr>
             </thead>
             <tbody>
                 <tr>
                     <th scope="row">1</th>
-                    <td>Mark</td>
-                    <td>Otto</td>
-                    <td>@mdo</td>
-                    <td>@mdo</td>
-                    <td>@mdo</td>
-                    <td>@mdo</td>
-                    <td>@mdo</td>
+                    <td>codigo</td>
+                    <td>Febrero-13</td>
+                    <td>10000</td>
                     <td>
-                       <button type="button" class="btn btn-dark">quitar</button>
+                       <button type="button" class="btn btn-dark" disabled>
+                        <i class="zmdi zmdi-archive"></i>
+                       </button>
                     </td>
+                    <td>
+                        <button type="button" class="btn btn-dark" disabled>
+                            <i class="zmdi zmdi-calendar-close"></i>
+                        </button>
+                     </td>
                 </tr>
             </tbody>
-            <tfoot>
-            <th scope="col">Total</th>
-            <th scope="col"> $ 0.00</th>
-        </tfoot>
     </table>
-
-    <button type="button" class="btn btn-dark">Enviar pedido</button>
 
     <script src="vendor/jquery/jquery-3.2.1.min.js"></script>
     <script src="vendor/animsition/js/animsition.min.js"></script>
