@@ -7,7 +7,6 @@ package datos;
 
 import negocio.Pedido;
 import util.ServiceLocator;
-import java.sql.CallableStatement;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -16,38 +15,39 @@ import java.util.ArrayList;
 import javax.swing.JOptionPane;
 import negocio.Cliente;
 import negocio.DetallePedido;
+import util.Mensaje;
 
 /**
  *
  * @author thrash
  */
 public class PedidoDAO {
-    public PedidoDAO(){
-        
+    private String usr;
+    private String pass;
+    
+    public PedidoDAO(String usr,String pass){
+        this.usr = usr;
+        this.pass = pass;
     }
     
-    public void registrarPedido(Pedido nuevo){
+    public void registrarPedido(Pedido nuevo,Mensaje ex){
       try {
-        String strSQL = "INSERT INTO \"pedido\" VALUES(?,?,?,?,?)";
-        Connection conexion = ServiceLocator.getInstance().tomarConexion();
+        String strSQL = "INSERT INTO natame.\"pedido\" VALUES(natame.pedido_seq.nextval,'N',sysdate,?,?)";
+        Connection conexion = ServiceLocator.getInstance().tomarConexion(usr,pass,ex);
         PreparedStatement prepStmt = conexion.prepareStatement(strSQL);
-        prepStmt.setInt(1,nuevo.getIdFactura()); 
-        prepStmt.setString(2, Character.toString(nuevo.getEstado())); 
-        prepStmt.setDate(3, java.sql.Date.valueOf(nuevo.getFecha())); 
-        prepStmt.setString(4, nuevo.getCliente().getIdCliente()); 
-        prepStmt.setString(5, Character.toString(nuevo.getCliente().getTipoId()));   
+        prepStmt.setString(1, nuevo.getCliente().getIdCliente()); 
+        prepStmt.setString(2, Character.toString(nuevo.getCliente().getTipoId()));   
         prepStmt.executeUpdate();
         
-        strSQL = "INSERT INTO \"detalle_pedido\" VALUES(?,?,?,?)";
-        String strSQL2 = "UPDATE \"inventario\" SET V_DISPONIBILIDAD = ? WHERE K_ID = ?";
-        String strSQL3 = "SELECT V_DISPONIBILIDAD FROM \"inventario\" WHERE K_ID = ?";
+        strSQL = "INSERT INTO natame.\"detalle_pedido\" VALUES(?,?,natame.pedido_seq.currval,?)";
+        String strSQL2 = "UPDATE natame.\"inventario\" SET V_DISPONIBILIDAD = ? WHERE K_ID = ?";
+        String strSQL3 = "SELECT V_DISPONIBILIDAD FROM natame.\"inventario\" WHERE K_ID = ?";
         
         for(DetallePedido detalle:nuevo.getItems()){
             prepStmt = conexion.prepareStatement(strSQL);
             prepStmt.setInt(1, detalle.getItem()); 
-            prepStmt.setInt(2, detalle.getCantidad()); 
-            prepStmt.setInt(3, nuevo.getIdFactura()); 
-            prepStmt.setInt(4, detalle.getProducto());
+            prepStmt.setInt(2, detalle.getCantidad());
+            prepStmt.setInt(3, detalle.getProducto());
             prepStmt.executeUpdate();
             
             prepStmt = conexion.prepareStatement(strSQL3);
@@ -64,9 +64,10 @@ public class PedidoDAO {
         
         prepStmt.close();
         ServiceLocator.getInstance().commit();
+        ex = null;
       } catch (SQLException e) {
         ServiceLocator.getInstance().rollback();
-        JOptionPane.showMessageDialog(null, e);
+        ex.setMensaje(e.getLocalizedMessage());
       }  finally {
         ServiceLocator.getInstance().liberarConexion();
       }
@@ -75,7 +76,7 @@ public class PedidoDAO {
     public void cancelarPedido(Pedido pedido){
       try {
         String strSQL = "UPDATE \"pedido\" SET I_ESTADO=\'C\' WHERE K_N_FACTURA=?";
-        Connection conexion = ServiceLocator.getInstance().tomarConexion();
+        Connection conexion = null;//ServiceLocator.getInstance().tomarConexion();
         PreparedStatement prepStmt = conexion.prepareStatement(strSQL);
         prepStmt.setInt(1, pedido.getIdFactura()); 
         prepStmt.executeUpdate();
@@ -106,7 +107,7 @@ public class PedidoDAO {
       try {
 
         
-        Connection conexion = ServiceLocator.getInstance().tomarConexion();
+        Connection conexion = null;//ServiceLocator.getInstance().tomarConexion();
         PreparedStatement prepStmt = null;
         
         //Sentencias SQL empleadas
@@ -162,7 +163,7 @@ public class PedidoDAO {
         ArrayList<Pedido> pedidos = new ArrayList<Pedido>();
         try{
             String strSQL = "SELECT * FROM \"pedido\" WHERE F_NUMERO_ID=? AND F_TIPO_ID=? AND I_ESTADO = ?";
-            Connection conexion = ServiceLocator.getInstance().tomarConexion();
+            Connection conexion = null;//ServiceLocator.getInstance().tomarConexion();
             PreparedStatement prepStmt = conexion.prepareStatement(strSQL);
             prepStmt.setString(1,cliente.getIdCliente());
             prepStmt.setString(2,Character.toString(cliente.getTipoId()));

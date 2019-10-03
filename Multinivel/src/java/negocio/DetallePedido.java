@@ -13,7 +13,6 @@ public class DetallePedido {
     public int item = 0;
     public int cantidad = 0;
     public int producto = 0;
-    public int restante = 0;
 
     public int getItem() {
         return item;
@@ -37,13 +36,5 @@ public class DetallePedido {
 
     public void setProducto(int producto) {
         this.producto = producto;
-    }
-
-    public int getRestante() {
-        return restante;
-    }
-
-    public void setRestante(int restante) {
-        this.restante = restante;
     }
 }

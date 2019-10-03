@@ -4,11 +4,13 @@
     Author     : Nestor
 --%>
 
+<%@page import="negocio.Clasificacion"%>
+<%@page import="negocio.Cliente"%>
 <%@page import="negocio.Representante"%>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
+
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <title>NatAmE</title>
     <meta charset="UTF-8">
@@ -296,7 +298,7 @@
                     <a class="nav-link" href="#">Estadisticas</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link disabled" href="formulario_Venta.html">Venta</a>
+                    <a class="nav-link disabled" href="formulario_Venta.jsp">Venta</a>
                 </li>
             </ul>
         </div>
@@ -312,10 +314,25 @@
                     <div class="profile-usertitle">
                         <div class="profile-usertitle-name">
                             <%Representante rep = (Representante)request.getSession().getAttribute("rep");
-                           out.println(rep.getNombre());%>
+                              Cliente cli = (Cliente)request.getSession().getAttribute("cli");
+                              System.out.println(cli+"fdsaf");
+                              Clasificacion cla = (Clasificacion)request.getSession().getAttribute("cla");
+                              String nombre="";
+                              String clasificacion="";
+                              if(rep!=null&&cli!=null){
+                                  nombre = rep.getNombre();
+                                  clasificacion = "Rep:"+cla.getNombre()+" & Cliente";
+                              }else if(rep!=null){
+                                  nombre = rep.getNombre();
+                                  clasificacion = "Rep:"+cla.getNombre();
+                              }else if(cli!=null){
+                                  nombre = cli.getNombre();
+                                  clasificacion = "Cliente";
+                              }
+                           out.println(nombre);%>
                         </div>
                         <div class="profile-usertitle-job">
-                            Empresario Junior
+                            <%out.println(clasificacion);%>
                         </div>
                     </div>
                     <div class="profile-userbuttons">

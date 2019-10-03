@@ -5,6 +5,7 @@
  */
 package presentacion;
 
+import util.Mensaje;
 import datos.RepresentanteDAO;
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -29,9 +30,20 @@ public class NatAmE {
      */
     public static void main(String[] args) throws IOException, SQLException {
         BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
-        RepresentanteDAO dao = new RepresentanteDAO("C1070983623","contra");
-        Representante rep = dao.obtenerRepresentante("C", "1070983623");
-        System.out.println(Character.toString(rep.getTipoId())+rep.getIdRep());
+        hola(in);
+    }
+    
+    public static int hola(BufferedReader in){
+        int a = 0;
+        try{
+            a = Integer.parseInt(in.readLine());
+        }catch(Exception e){
+            System.out.println("Holis");
+            return 0;
+        }finally{
+            System.out.println("Entré al finally");
+        }
+        return a;
     }
     
 }

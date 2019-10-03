@@ -12,6 +12,8 @@ package negocio;
 public class ProductoInventario {
     private int idProducto;
     private String nombreProducto;
+    public double precio = 0;
+    private double iva;
 
     public int getIdProducto() {
         return idProducto;
@@ -29,4 +31,19 @@ public class ProductoInventario {
         this.nombreProducto = nombreProducto;
     }
 
+    public double getIva() {
+        return iva;
+    }
+
+    public void setIva(double iva) {
+        this.iva = iva;
+    }
+
+    public double getPrecio() {
+        return precio;
+    }
+
+    public void setPrecio(double precio) {
+        this.precio = precio;
+    }
 }

@@ -50,7 +50,7 @@ public class ServiceLocator {
 	private ServiceLocator() throws Exception {
 		try {
                      DriverManager.registerDriver (new oracle.jdbc.driver.OracleDriver());
-                     conexion = DriverManager.getConnection("jdbc:oracle:thin:@localhost:1521:xe","natame","natame");
+                     conexion = DriverManager.getConnection("jdbc:oracle:thin:@localhost:1522:xe","natame","natame");
 		     conexion.setAutoCommit(false);
 		} catch (Exception e) {
                     System.out.print(e);
@@ -61,16 +61,25 @@ public class ServiceLocator {
 	 * Toma la conexion para que ningun otro proceso la puedan utilizar
 	 * @return da la conexion a la base de datos
 	 */
-	public synchronized Connection tomarConexion() {
+	public synchronized Connection tomarConexion(String usr, String pass,Mensaje mensaje) {
 		while (!conexionLibre) {
 			try {
 			  wait();
 			} catch (InterruptedException e) {
+                                mensaje.setMensaje(e.getLocalizedMessage());
 				e.printStackTrace();
 			}
 		}
 		conexionLibre = false;
-		notify();
+                try {
+                    conexion = DriverManager.getConnection("jdbc:oracle:thin:@localhost:1522:xe",usr,pass);
+                    conexion.setAutoCommit(false);
+                    notify();
+                } catch (SQLException ex) {
+                    mensaje.setMensaje(ex.getLocalizedMessage());
+                    return null;
+                }
+                mensaje.setMensaje("Conexion Exitosa");
 		return conexion;
 	}
 
@@ -139,18 +148,12 @@ public class ServiceLocator {
 	}
         
         public SQLException cambiarConexion(String user,String pass){
-            try {
-                conexion = DriverManager.getConnection("jdbc:oracle:thin:@localhost:1521:xe",user,pass);
-                conexion.setAutoCommit(false);
-                return null;
-            } catch (SQLException ex) {
-                return ex;
-            }
+            return null;
         }
         
         public void restaurarConexion(){
             try {
-                conexion = DriverManager.getConnection("jdbc:oracle:thin:@localhost:1521:xe","natame","natame");
+                conexion = DriverManager.getConnection("jdbc:oracle:thin:@localhost:1522:xe","natame","natame");
                 conexion.setAutoCommit(false);
             } catch (SQLException ex) {
                 System.out.print(ex);

@@ -11,7 +11,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import negocio.Clasificacion;
-import negocio.Region;
+import util.Mensaje;
 import util.ServiceLocator;
 
 /**
@@ -19,26 +19,33 @@ import util.ServiceLocator;
  * @author thrash
  */
 public class ClasificacionDAO {
-    public ArrayList<Clasificacion> obtenerClasificacion(){
-        ArrayList<Clasificacion> clasificaciones = new ArrayList<Clasificacion>();
+    private String usr;
+    private String pass;
+    
+    public ClasificacionDAO(String usr, String pass){
+        this.usr = usr;
+        this.pass = pass;
+    }
+    
+    public Clasificacion obtenerClasificacion(int codigo, Mensaje ex){
+        Clasificacion clasificacion = new Clasificacion();
         try{
-            String strSQL = "select * from \"clasificacion\"";
-            Connection conexion = ServiceLocator.getInstance().tomarConexion();
+            String strSQL = "select N_NOMBRE,V_COMISION from natame.\"clasificacion\" where K_ID=?";
+            Connection conexion = ServiceLocator.getInstance().tomarConexion(usr,pass,ex);
             PreparedStatement prepStmt = conexion.prepareStatement(strSQL);
+            prepStmt.setInt(1, codigo);
             ResultSet resultado = prepStmt.executeQuery();
             while(resultado.next()){
-                Clasificacion leido = new Clasificacion();
-                leido.setIdClasificacion(resultado.getInt(1));
-                leido.setNombre(resultado.getString(2));
-                leido.setComision(resultado.getDouble(3));
-                clasificaciones.add(leido);
+                clasificacion.setNombre(resultado.getString(1));
+                clasificacion.setComision(resultado.getDouble(2));
             }
             prepStmt.close();
-            
         }catch(SQLException e){
+            ex.setMensaje(e.getLocalizedMessage());
+            return null;
         }finally{
             ServiceLocator.getInstance().liberarConexion();
         }
-        return clasificaciones;
+        return clasificacion;
     }
 }

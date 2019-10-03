@@ -6,6 +6,8 @@
 package presentacion;
 
 import datos.AutenticacionDAO;
+import datos.ClasificacionDAO;
+import datos.ClienteDAO;
 import datos.RepresentanteDAO;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -14,7 +16,10 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import negocio.Clasificacion;
+import negocio.Cliente;
 import negocio.Representante;
+import util.Mensaje;
 
 /**
  *
@@ -33,17 +38,37 @@ public class login extends HttpServlet {
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+        
         response.setContentType("text/html;charset=UTF-8");
+        
+        //Obtener las entradas del formulario
         String usr = request.getParameter("email");
         String pass = request.getParameter("pass");
+        Mensaje ex;
+        
+        //Autenticar al usuario
         AutenticacionDAO dao = new AutenticacionDAO();
-        RepresentanteDAO repD = new RepresentanteDAO(usr,pass);
-        Representante rep = repD.obtenerRepresentante(usr.substring(0, 1), usr.substring(1));
-        rep.setPass(pass);
-        System.out.print(usr.substring(0, 1)+" "+usr.substring(1));
-        SQLException ex= dao.autenticar(usr, pass);
-        if(ex==null){
+        ex = dao.autenticar(usr, pass);
+
+        if(ex.getMensaje()==null){
+            //Obtener datos del usuario autenticado
+            RepresentanteDAO repD = new RepresentanteDAO(usr,pass);
+            ClienteDAO cliD = new ClienteDAO(usr,pass);
+            ClasificacionDAO claD = new ClasificacionDAO(usr,pass);
+            Clasificacion cla = null;
+            
+            Representante rep = repD.obtenerRepresentante(usr.substring(0, 1), usr.substring(1),ex);
+            Cliente cli = cliD.obtenerCliente(usr.substring(0, 1), usr.substring(1),ex);
+            
+            if(rep!=null){
+                cla = claD.obtenerClasificacion(rep.getClasificacion(), ex);
+            }
+            
             request.getSession().setAttribute("rep", rep);
+            request.getSession().setAttribute("cli", cli);
+            request.getSession().setAttribute("usr", usr);
+            request.getSession().setAttribute("pass", pass);
+            request.getSession().setAttribute("cla", cla);
             response.sendRedirect("/Multinivel/pagina_Lobby.jsp");
         }else{
             try (PrintWriter out = response.getWriter()) {

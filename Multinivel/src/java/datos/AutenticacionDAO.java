@@ -5,7 +5,7 @@
  */
 package datos;
 
-import java.sql.SQLException;
+import util.Mensaje;
 import util.ServiceLocator;
 
 /**
@@ -13,12 +13,9 @@ import util.ServiceLocator;
  * @author Nestor
  */
 public class AutenticacionDAO {
-    public SQLException autenticar(String usr,String pass){
-        SQLException ex;
-        ServiceLocator.getInstance().tomarConexion();
-        ex = ServiceLocator.getInstance().cambiarConexion(usr, pass);
-        System.out.println(ex+"rerererer");
-        ServiceLocator.getInstance().restaurarConexion();
+    public Mensaje autenticar(String usr,String pass){
+        Mensaje ex = new Mensaje();
+        ServiceLocator.getInstance().tomarConexion(usr,pass,ex);
         ServiceLocator.getInstance().liberarConexion();
         return ex;
     }

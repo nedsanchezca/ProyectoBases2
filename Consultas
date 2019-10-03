@@ -1,0 +1,13 @@
+create view P_USR_TAB as select a.GRANTEE, r.PRIVILEGE,r.ROLE,r.TABLE_NAME from dba_role_privs a, role_tab_privs r where a.GRANTED_ROLE=r.ROLE and  a.GRANTEE='C1023961590';
+create view P_USR_SYS as select a.GRANTEE, r.PRIVILEGE,r.ROLE from dba_role_privs a, role_sys_privs r where a.GRANTED_ROLE=r.ROLE;
+create view P_ROL_TAB as select role,privilege from role_tab_privs where role = 'R_REPVENTAS';
+create view P_ROL_SYS as select role,privilege from role_sys_privs where role = 'NATAME';
+
+create public synonym person for natame."persona";
+
+
+grant update(V_DISPONIBILIDAD) on natame."inventario" to R_REPVENTAS_MASTER;
+
+grant select on natame."inventario" to R_REPVENTAS_MASTER;
+
+select p.N_NOMBRE, p.N_APELLIDO, p.A_DIRECCION, p.C_CIUDAD, c.* from natame."persona" p, natame."cliente" c where p.K_TIPO_ID=c.F_TIPO_ID and p.K_NUMERO_ID=c.F_NUMERO_ID and c.F_TIPO_ID_REP_VENTAS='C1023961590' and c.F_ID_REP_VENTAS='C1023961590';

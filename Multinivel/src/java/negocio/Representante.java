@@ -26,7 +26,7 @@ public class Representante {
     private int clasificacion;
     private String captadorId;
     private String captadorTipo;
-    private String codigoPostal;
+    private String codigoPostal=null;
     private String pass;
 
     public String getIdRep() {

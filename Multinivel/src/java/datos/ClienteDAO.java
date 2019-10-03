@@ -14,17 +14,27 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import negocio.Representante;
+import util.Mensaje;
 
 /**
  *
  * @author thrash
  */
 public class ClienteDAO {
-    public void incluirCliente(Cliente cliente){
+    
+    String usr;
+    String pass;
+    
+    public ClienteDAO(String usr, String pass){
+        this.usr = usr;
+        this.pass = pass;
+    }
+    
+    public void incluirCliente(Cliente cliente,Mensaje ex){
       try {
-        String strSQL = "INSERT INTO \"persona\" VALUES(?,?,?,?,?,?)";
-        Connection conexion = ServiceLocator.getInstance().tomarConexion();
-        PreparedStatement prepStmt = conexion.prepareStatement("select count(*) from \"persona\" where K_NUMERO_ID=? and K_TIPO_ID=?");
+        String strSQL = "INSERT INTO natame.\"persona\" VALUES(?,?,?,?,?,?)";
+        Connection conexion = ServiceLocator.getInstance().tomarConexion(usr,pass,ex);
+        PreparedStatement prepStmt = conexion.prepareStatement("select count(*) from natame.\"persona\" where K_NUMERO_ID=? and K_TIPO_ID=?");
         prepStmt.setString(1, cliente.getIdCliente());
         prepStmt.setString(2, Character.toString(cliente.getTipoId()));
         ResultSet resultado = prepStmt.executeQuery();
@@ -39,7 +49,7 @@ public class ClienteDAO {
             prepStmt.setString(6, cliente.getCiudad());  
             prepStmt.executeUpdate();
         }
-        strSQL = "INSERT INTO \"cliente\" VALUES(?,?,?,?,?,?)";
+        strSQL = "INSERT INTO natame.\"cliente\" VALUES(?,?,?,?,?,?)";
         prepStmt = conexion.prepareStatement(strSQL);
         prepStmt.setString(1, cliente.getIdCliente()); 
         prepStmt.setString(2, Character.toString(cliente.getTipoId())); 
@@ -51,19 +61,20 @@ public class ClienteDAO {
         prepStmt.close();
         ServiceLocator.getInstance().commit();
       } catch (SQLException e) {
-           System.out.print(e);
+          ex.setMensaje(e.getLocalizedMessage());
       }  finally {
          ServiceLocator.getInstance().liberarConexion();
       }
     }
     
-    public Cliente obtenerCliente(String tipoId, String numeroId){
+    public Cliente obtenerCliente(String tipoId, String numeroId,Mensaje ex){
+      int contador=0;
       Cliente cliente = new Cliente();
       cliente.setTipoId(tipoId.charAt(0));
       cliente.setIdCliente(numeroId);
       try{
-            String strSQL = "select * from \"persona\" where K_TIPO_ID=? and K_NUMERO_ID=?";
-            Connection conexion = ServiceLocator.getInstance().tomarConexion();
+            String strSQL = "select * from natame.\"persona\" where K_TIPO_ID=? and K_NUMERO_ID=?";
+            Connection conexion = ServiceLocator.getInstance().tomarConexion(usr,pass,ex);
             PreparedStatement prepStmt = conexion.prepareStatement(strSQL);
             prepStmt.setString(1, tipoId);
             prepStmt.setString(2, numeroId);
@@ -75,7 +86,7 @@ public class ClienteDAO {
                 cliente.setCiudad(resultado.getString(6));
             }
             
-            strSQL = "select * from \"cliente\" where F_TIPO_ID=? and F_NUMERO_ID=?";
+            strSQL = "select * from natame.\"cliente\" where F_TIPO_ID=? and F_NUMERO_ID=?";
             
             prepStmt = conexion.prepareStatement(strSQL);
             prepStmt.setString(1, tipoId);
@@ -87,22 +98,27 @@ public class ClienteDAO {
                 cliente.setCorreo(resultado.getString(4));
                 cliente.setIdRep(resultado.getString(5));
                 cliente.setTipoIdRep(resultado.getString(6));
+                contador++;
             }
             prepStmt.close();
         }catch(SQLException e){
             System.out.print(e);
+            return null;
         }finally{
             ServiceLocator.getInstance().liberarConexion();
+        }
+        if(contador==0){
+            cliente = null;
         }
         return cliente;
     }
 
-    public ArrayList<Cliente> obtenerClientes(Representante rep){
+    public ArrayList<Cliente> obtenerClientes(Representante rep,Mensaje ex){
       ArrayList<Cliente> clientes = new ArrayList<Cliente>();
       try{
-            String strSQL = " select p.N_NOMBRE, p.N_APELLIDO, p.A_DIRECCION, p.C_CIUDAD, c.* from \"persona\" p, \"cliente\" c "
+            String strSQL = " select p.N_NOMBRE, p.N_APELLIDO, p.A_DIRECCION, p.C_CIUDAD, c.* from natame.\"persona\" p, natame.\"cliente\" c "
                     + "where p.K_TIPO_ID=c.F_TIPO_ID and p.K_NUMERO_ID=c.F_NUMERO_ID and c.F_TIPO_ID_REP_VENTAS=? and c.F_ID_REP_VENTAS=?";
-            Connection conexion = ServiceLocator.getInstance().tomarConexion();
+            Connection conexion = ServiceLocator.getInstance().tomarConexion(usr,pass,ex);
             PreparedStatement prepStmt = conexion.prepareStatement(strSQL);
             prepStmt.setString(1, Character.toString(rep.getTipoId()));
             prepStmt.setString(2, rep.getIdRep());
