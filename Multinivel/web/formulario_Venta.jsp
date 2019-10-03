@@ -4,6 +4,7 @@
     Author     : thrash
 --%>
 
+<%@page import="negocio.Pedido"%>
 <%@page import="negocio.Cliente"%>
 <%@page import="datos.ClienteDAO"%>
 <%@page import="util.Mensaje"%>
@@ -31,153 +32,8 @@
         <link rel="stylesheet" type="text/css" href="vendor/daterangepicker/daterangepicker.css">
         <link rel="stylesheet" type="text/css" href="css/util.css">
         <link rel="stylesheet" type="text/css" href="css/main.css">
-
+        <link rel="stylesheet" type="text/css" href="css/estilo.css">
     </head>
-    <style type="text/css">
-        .navbar {
-            background-color: #373846;
-        }
-
-        .navbar .navbar-brand {
-            color: #050505;
-        }
-
-        .navbar .navbar-brand:hover,
-        .navbar .navbar-brand:focus {
-            color: #744ba2;
-        }
-
-        .navbar .navbar-text {
-            color: #050505;
-        }
-
-        .navbar .navbar-nav .nav-link {
-            color: #050505;
-            border-radius: .25rem;
-            margin: 0 0.25em;
-        }
-
-        .navbar .navbar-nav .nav-link:not(.disabled):hover,
-        .navbar .navbar-nav .nav-link:not(.disabled):focus {
-            color: #744ba2;
-        }
-
-        .navbar .navbar-nav .nav-item.active .nav-link,
-        .navbar .navbar-nav .nav-item.active .nav-link:hover,
-        .navbar .navbar-nav .nav-item.active .nav-link:focus,
-        .navbar .navbar-nav .nav-item.show .nav-link,
-        .navbar .navbar-nav .nav-item.show .nav-link:hover,
-        .navbar .navbar-nav .nav-item.show .nav-link:focus {
-            color: #744ba2;
-            background-color: #b390c2;
-        }
-
-        .navbar .navbar-toggle {
-            border-color: #b390c2;
-        }
-
-        .navbar .navbar-toggle:hover,
-        .navbar .navbar-toggle:focus {
-            background-color: #b390c2;
-        }
-
-        .navbar .navbar-toggle .navbar-toggler-icon {
-            color: #050505;
-        }
-
-        .navbar .navbar-collapse,
-        .navbar .navbar-form {
-            border-color: #050505;
-        }
-
-        .navbar .navbar-link {
-            color: #050505;
-        }
-
-        .navbar .navbar-link:hover {
-            color: #744ba2;
-        }
-
-        @media (max-width: 575px) {
-            .navbar-expand-sm .navbar-nav .show .dropdown-menu .dropdown-item {
-                color: #050505;
-            }
-
-            .navbar-expand-sm .navbar-nav .show .dropdown-menu .dropdown-item:hover,
-            .navbar-expand-sm .navbar-nav .show .dropdown-menu .dropdown-item:focus {
-                color: #744ba2;
-            }
-
-            .navbar-expand-sm .navbar-nav .show .dropdown-menu .dropdown-item.active {
-                color: #744ba2;
-                background-color: #b390c2;
-            }
-        }
-
-        @media (max-width: 767px) {
-            .navbar-expand-md .navbar-nav .show .dropdown-menu .dropdown-item {
-                color: #050505;
-            }
-
-            .navbar-expand-md .navbar-nav .show .dropdown-menu .dropdown-item:hover,
-            .navbar-expand-md .navbar-nav .show .dropdown-menu .dropdown-item:focus {
-                color: #744ba2;
-            }
-
-            .navbar-expand-md .navbar-nav .show .dropdown-menu .dropdown-item.active {
-                color: #744ba2;
-                background-color: #b390c2;
-            }
-        }
-
-        @media (max-width: 991px) {
-            .navbar-expand-lg .navbar-nav .show .dropdown-menu .dropdown-item {
-                color: #050505;
-            }
-
-            .navbar-expand-lg .navbar-nav .show .dropdown-menu .dropdown-item:hover,
-            .navbar-expand-lg .navbar-nav .show .dropdown-menu .dropdown-item:focus {
-                color: #744ba2;
-            }
-
-            .navbar-expand-lg .navbar-nav .show .dropdown-menu .dropdown-item.active {
-                color: #744ba2;
-                background-color: #b390c2;
-            }
-        }
-
-        @media (max-width: 1199px) {
-            .navbar-expand-xl .navbar-nav .show .dropdown-menu .dropdown-item {
-                color: #050505;
-            }
-
-            .navbar-expand-xl .navbar-nav .show .dropdown-menu .dropdown-item:hover,
-            .navbar-expand-xl .navbar-nav .show .dropdown-menu .dropdown-item:focus {
-                color: #744ba2;
-            }
-
-            .navbar-expand-xl .navbar-nav .show .dropdown-menu .dropdown-item.active {
-                color: #744ba2;
-                background-color: #b390c2;
-            }
-        }
-
-        .navbar-expand .navbar-nav .show .dropdown-menu .dropdown-item {
-            color: #050505;
-        }
-
-        .navbar-expand .navbar-nav .show .dropdown-menu .dropdown-item:hover,
-        .navbar-expand .navbar-nav .show .dropdown-menu .dropdown-item:focus {
-            color: #744ba2;
-        }
-
-        .navbar-expand .navbar-nav .show .dropdown-menu .dropdown-item.active {
-            color: #744ba2;
-            background-color: #b390c2;
-        }
-
-    </style>
-
     <body>
         <nav class="navbar navbar-expand-lg">
             <a class="navbar-brand" href="pagina_Lobby.jsp">NatAmE</a>
@@ -192,10 +48,13 @@
                         <a class="nav-link" href="formulario_Nuevo_Rep.html"> Ingresar Representante <span class="sr-only">(current)</span></a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="#">Estadisticas</a>
+                        <a class="nav-link disabled" href="formulario_Venta.jsp">Venta</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link disabled" href="formulario_Venta.jsp">Venta</a>
+                        <a class="nav-link" href = "paginaEstadoPedido.jsp">Estado pedido</a>
+                    </li>
+                    <li class="nav-item">
+                        <form action=logout><input type="submit" class="nav-link" value="Salir"></form>
                     </li>
                 </ul>
             </div>
@@ -208,23 +67,30 @@
             <div class="container">
                 <div class="row" id = "header-ingreso-producto">
                     <div class = "column">
-                        <h3>Código del producto</h3>
+                        <h4>Código del producto</h4>
                     </div>
                     <div class="column">
                         <input type="text" name="codigo">
                     </div>
                     <div class="column">
-                        <h3>Cantidad</h3>
+                        <h4>Cantidad</h4>
                     </div>
                     <div class="column">
                         <input type="text" name="cantidad">
                     </div>
                     <div class="column">
-                        <h3>Region</h3>
+                        <h4>Region</h4>
                     </div>
-                    <div class="column">
-                        <input type="text" name="region">
+                <div class="column">
+                    <a class="btn btn-secondary dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        ----
+                    </a>
+                    <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+                        <a class="dropdown-item" href="#">Bogotá</a>
+                        <a class="dropdown-item" href="#">Amazonía</a>
+                        
                     </div>
+                </div>
                     <div class="column">
                         <input type="submit" value="Agregar" class="btn btn-dark">
                     </div>    
@@ -232,7 +98,7 @@
             </div>
         </form>
 
-        <table class="table">
+        <table class="table table-bordered">
             <thead>
                 <tr>
                     <th scope="col">#</th>
@@ -242,18 +108,34 @@
                     <th scope="col">Precio neto</th>
                     <th scope="col">Iva</th>
                     <th scope="col">Total</th>
+                    <th scope="col">      </th>
                 </tr>
             </thead>
             <tbody>
                 <%
                     Representante rep = (Representante) request.getSession().getAttribute("rep");
-                    InventarioDAO inv = new InventarioDAO(rep.getTipoId() + rep.getIdRep(), rep.getPass());
+                    Cliente cli = (Cliente) request.getSession().getAttribute("cli");
+                    ArrayList<Pedido> pedidos = (ArrayList<Pedido>)request.getSession().getAttribute("arrPed");
+                    Pedido mod = null;
+                    if(request.getParameter("mod")!=null){
+                        mod = pedidos.get(Integer.parseInt(request.getParameter("mod")));
+                        request.getSession().setAttribute("pedidoMod", mod);
+                    }
+                    InventarioDAO inv = new InventarioDAO((String)request.getSession().getAttribute("usr"),(String)request.getSession().getAttribute("pass"));
                     ArrayList<DetallePedido> arr = (ArrayList<DetallePedido>) request.getSession().getAttribute("det");
                     ArrayList<ProductoInventario> prod = (ArrayList<ProductoInventario>) request.getSession().getAttribute("pro");
                     if (arr == null) {
                         arr = new ArrayList<DetallePedido>();
                         prod = new ArrayList<ProductoInventario>();
                     }
+                    if(mod!=null){
+                        arr = mod.getItems();
+                        for(DetallePedido d:arr){
+                            ProductoInventario p = inv.obtenerProducto(d.getProducto(), new Mensaje());
+                            prod.add(p);
+                        }
+                    }
+                    
                     int cantidad = 0;
                     int codigo = 0;
 
@@ -263,7 +145,7 @@
                         cantidad = Integer.parseInt(request.getParameter("cantidad"));
                         codigo = Integer.parseInt(request.getParameter("codigo"));
                         producto = inv.obtenerProducto(codigo, ex);
-                    } catch (NumberFormatException e) {
+                    } catch (Exception e) {
 
                     }
 
@@ -302,22 +184,36 @@
     </table>
     <form action=registroPedido>
     <div class="form-group">
-        <label for="K_TIPO_ID">Cliente: </label>
-        <select class="form-control" id="cliente" name="cliente">
             <%;
-            ClienteDAO dao1 = new ClienteDAO(rep.getTipoId() + rep.getIdRep(), rep.getPass());
-            ArrayList<Cliente> clientes = dao1.obtenerClientes(rep, new Mensaje());
-            i=0;
-            for(Cliente c:clientes){
-                out.println("<option value=\""+i+"\">"+c.getTipoId()+c.getIdCliente()+" "+c.getNombre()+"</option>");
-                i++;
+            if(rep!=null&&pedidos==null){
+                ClienteDAO dao1 = new ClienteDAO((String)request.getSession().getAttribute("usr"),(String)request.getSession().getAttribute("pass"));
+                ArrayList<Cliente> clientes = dao1.obtenerClientes(rep, new Mensaje());
+                i=0;
+                out.println("<label for=\"K_TIPO_ID\">Cliente: </label>");
+                out.println("<select class=\"form-control\" id=\"cliente\" name=\"cliente\">");
+                for(Cliente c:clientes){
+                    out.println("<option value=\""+i+"\">"+c.getTipoId()+c.getIdCliente()+" "+c.getNombre()+"</option>");
+                    i++;
+                }
+                out.println("</select>");
+                request.getSession().setAttribute("aclientes", clientes);
             }
-            request.getSession().setAttribute("aclientes", clientes);
-            %>
-        </select>
+            %>        
     </div>
-        <input type="submit" value = "enviar" class="btn btn-dark">
+        <%if(rep!=null&&pedidos==null){%>
+            <input type="submit" value = "enviar como representante" class="btn btn-dark">
+        <%}%>
     </form>
+    <%if(cli!=null){%>
+    <form action=registroPedidoC>
+        <input type="submit" value = "enviar como cliente" class="btn btn-dark">
+    </form>
+    <%}%>
+    <%if(pedidos!=null){%>
+    <form action=modificacionPedido>
+        <input type="submit" value = "Modificar" class="btn btn-dark">
+    </form>
+    <%}%>
     <script src="vendor/jquery/jquery-3.2.1.min.js"></script>
     <script src="vendor/animsition/js/animsition.min.js"></script>
     <script src="vendor/bootstrap/js/popper.js"></script>

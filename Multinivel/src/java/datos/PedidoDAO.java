@@ -73,16 +73,16 @@ public class PedidoDAO {
       }
     }
     
-    public void cancelarPedido(Pedido pedido){
+    public void cancelarPedido(Pedido pedido, Mensaje ex){
       try {
-        String strSQL = "UPDATE \"pedido\" SET I_ESTADO=\'C\' WHERE K_N_FACTURA=?";
-        Connection conexion = null;//ServiceLocator.getInstance().tomarConexion();
+        String strSQL = "UPDATE natame.\"pedido\" SET I_ESTADO=\'C\' WHERE K_N_FACTURA=?";
+        Connection conexion = ServiceLocator.getInstance().tomarConexion(usr,pass,ex);
         PreparedStatement prepStmt = conexion.prepareStatement(strSQL);
         prepStmt.setInt(1, pedido.getIdFactura()); 
         prepStmt.executeUpdate();
         
-        strSQL = "UPDATE \"inventario\" "
-                + "SET V_DISPONIBILIDAD = (SELECT V_DISPONIBILIDAD FROM \"inventario\" WHERE K_ID = ?)+? "
+        strSQL = "UPDATE natame.\"inventario\" "
+                + "SET V_DISPONIBILIDAD = (SELECT V_DISPONIBILIDAD FROM natame.\"inventario\" WHERE K_ID = ?)+? "
                 + "WHERE K_ID = ?";
         prepStmt = conexion.prepareStatement(strSQL);
         
@@ -98,25 +98,26 @@ public class PedidoDAO {
         ServiceLocator.getInstance().commit();
       } catch (SQLException e) {
         ServiceLocator.getInstance().rollback();
+          System.out.println(e);
       }  finally {
         ServiceLocator.getInstance().liberarConexion();
       }
     }
     
-    public void modificarPedido(Pedido modificado){
+    public void modificarPedido(Pedido modificado,Mensaje ex){
       try {
 
         
-        Connection conexion = null;//ServiceLocator.getInstance().tomarConexion();
+        Connection conexion = ServiceLocator.getInstance().tomarConexion(usr,pass,ex);
         PreparedStatement prepStmt = null;
         
         //Sentencias SQL empleadas
-        String strDel = "DELETE FROM \"detalle_pedido\" WHERE F_N_FACTURA = ?";
-        String strSQL = "INSERT INTO \"detalle_pedido\" VALUES(?,?,?,?)";
-        String strSQL2 = "UPDATE \"inventario\" "
-                + "SET V_DISPONIBILIDAD = (SELECT V_DISPONIBILIDAD FROM \"inventario\" WHERE K_ID = ?)+? "
+        String strDel = "DELETE FROM natame.\"detalle_pedido\" WHERE F_N_FACTURA = ?";
+        String strSQL = "INSERT INTO natame.\"detalle_pedido\" VALUES(?,?,?,?)";
+        String strSQL2 = "UPDATE natame.\"inventario\" "
+                + "SET V_DISPONIBILIDAD = (SELECT V_DISPONIBILIDAD FROM natame.\"inventario\" WHERE K_ID = ?)+? "
                 + "WHERE K_ID = ?";
-        String strObt = "SELECT F_ID_INVENTARIO,V_CANTIDAD FROM \"detalle_pedido\" WHERE F_N_FACTURA=?";
+        String strObt = "SELECT F_ID_INVENTARIO,V_CANTIDAD FROM natame.\"detalle_pedido\" WHERE F_N_FACTURA=?";
         
         prepStmt = conexion.prepareStatement(strObt);
         prepStmt.setInt(1, modificado.getIdFactura());
@@ -159,17 +160,17 @@ public class PedidoDAO {
       }
     }
     
-    public ArrayList<Pedido> obtenerPedidos(Cliente cliente, String estado){
+    public ArrayList<Pedido> obtenerPedidos(Cliente cliente, String estado, Mensaje ex){
         ArrayList<Pedido> pedidos = new ArrayList<Pedido>();
         try{
-            String strSQL = "SELECT * FROM \"pedido\" WHERE F_NUMERO_ID=? AND F_TIPO_ID=? AND I_ESTADO = ?";
-            Connection conexion = null;//ServiceLocator.getInstance().tomarConexion();
+            String strSQL = "SELECT * FROM natame.\"pedido\" WHERE F_NUMERO_ID=? AND F_TIPO_ID=? AND I_ESTADO = ?";
+            Connection conexion = ServiceLocator.getInstance().tomarConexion(usr,pass,ex);
             PreparedStatement prepStmt = conexion.prepareStatement(strSQL);
             prepStmt.setString(1,cliente.getIdCliente());
             prepStmt.setString(2,Character.toString(cliente.getTipoId()));
             prepStmt.setString(3,estado);
             ResultSet pedido = prepStmt.executeQuery();
-            strSQL = "SELECT * FROM \"detalle_pedido\" WHERE F_N_FACTURA=?";
+            strSQL = "SELECT * FROM natame.\"detalle_pedido\" WHERE F_N_FACTURA=?";
             
             while(pedido.next()){
                 ArrayList<DetallePedido> detLeidos = new ArrayList<DetallePedido>();
@@ -193,7 +194,7 @@ public class PedidoDAO {
             }
             prepStmt.close();
         }catch(SQLException e){
-            JOptionPane.showMessageDialog(null, e);
+            //JOptionPane.showMessageDialog(null, e);
         }finally{
             ServiceLocator.getInstance().liberarConexion();
         }

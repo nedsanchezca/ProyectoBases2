@@ -47,10 +47,10 @@
                     <a class="nav-link disabled" href="formulario_Venta.jsp">Venta</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href = "paginaEstadoPedido.html">Estado pedido</a>
+                    <a class="nav-link" href = "paginaEstadoPedido.jsp">Estado pedido</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="index.html">Salir</a>
+                    <form action=logout><input type="submit" class="nav-link" value="Salir"></form>
                 </li>
             </ul>
         </div>
@@ -67,7 +67,6 @@
                         <div class="profile-usertitle-name">
                             <%Representante rep = (Representante)request.getSession().getAttribute("rep");
                               Cliente cli = (Cliente)request.getSession().getAttribute("cli");
-                              System.out.println(cli+"fdsaf");
                               Clasificacion cla = (Clasificacion)request.getSession().getAttribute("cla");
                               String nombre="";
                               String clasificacion="";

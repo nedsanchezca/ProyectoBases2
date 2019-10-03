@@ -5,7 +5,6 @@
  */
 package presentacion;
 
-import datos.ClienteDAO;
 import datos.PedidoDAO;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -17,14 +16,13 @@ import javax.servlet.http.HttpServletResponse;
 import negocio.Cliente;
 import negocio.DetallePedido;
 import negocio.Pedido;
-import negocio.Representante;
 import util.Mensaje;
 
 /**
  *
  * @author thrash
  */
-public class registroPedido extends HttpServlet {
+public class modificacionPedido extends HttpServlet {
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -38,20 +36,18 @@ public class registroPedido extends HttpServlet {
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
-        Representante rep = (Representante)request.getSession().getAttribute("rep");
-        ArrayList<Cliente> aClientes = (ArrayList<Cliente>)request.getSession().getAttribute("aclientes");
-        Cliente cliente = aClientes.get(Integer.parseInt(request.getParameter("cliente")));
         Mensaje ex = new Mensaje();
         ArrayList<DetallePedido> detalles = (ArrayList<DetallePedido>)request.getSession().getAttribute("det");
-        Pedido pedido = new Pedido();
-        pedido.setCliente(cliente);
+        Pedido pedido = (Pedido)request.getSession().getAttribute("pedidoMod");
         pedido.setItems(detalles);
         PedidoDAO dao = new PedidoDAO((String)request.getSession().getAttribute("usr"),(String)request.getSession().getAttribute("pass"));
-        dao.registrarPedido(pedido, ex);
+        dao.modificarPedido(pedido,new Mensaje());
         if(ex.getMensaje()==null){
             request.getSession().setAttribute("det", null);
             request.getSession().setAttribute("pro", null);
-            response.sendRedirect("/Multinivel/formulario_Venta.jsp");
+            request.getSession().setAttribute("arrPed", null);
+            
+            response.sendRedirect("/Multinivel/index.html");
         }else{
             try (PrintWriter out = response.getWriter()) {
                 out.println("<meta http-equiv='refresh' content='3;URL=formulario_Venta.jsp'>");

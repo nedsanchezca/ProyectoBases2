@@ -10,4 +10,4 @@ grant update(V_DISPONIBILIDAD) on natame."inventario" to R_REPVENTAS_MASTER;
 
 grant select on natame."inventario" to R_REPVENTAS_MASTER;
 
-select p.N_NOMBRE, p.N_APELLIDO, p.A_DIRECCION, p.C_CIUDAD, c.* from natame."persona" p, natame."cliente" c where p.K_TIPO_ID=c.F_TIPO_ID and p.K_NUMERO_ID=c.F_NUMERO_ID and c.F_TIPO_ID_REP_VENTAS='C1023961590' and c.F_ID_REP_VENTAS='C1023961590';
+select p.N_NOMBRE, p.N_APELLIDO, p.A_DIRECCION, p.C_CIUDAD, c.* from natame."persona" p, natame."cliente" c where p.K_TIPO_ID=c.F_TIPO_ID and p.K_NUMERO_ID=c.F_NUMERO_ID and c.F_TIPO_ID_REP_VENTAS='C' and c.F_ID_REP_VENTAS='1023961590';

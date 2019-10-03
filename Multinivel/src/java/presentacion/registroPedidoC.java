@@ -5,7 +5,6 @@
  */
 package presentacion;
 
-import datos.ClienteDAO;
 import datos.PedidoDAO;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -24,7 +23,7 @@ import util.Mensaje;
  *
  * @author thrash
  */
-public class registroPedido extends HttpServlet {
+public class registroPedidoC extends HttpServlet {
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -38,9 +37,7 @@ public class registroPedido extends HttpServlet {
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
-        Representante rep = (Representante)request.getSession().getAttribute("rep");
-        ArrayList<Cliente> aClientes = (ArrayList<Cliente>)request.getSession().getAttribute("aclientes");
-        Cliente cliente = aClientes.get(Integer.parseInt(request.getParameter("cliente")));
+        Cliente cliente = (Cliente)request.getSession().getAttribute("cli");;
         Mensaje ex = new Mensaje();
         ArrayList<DetallePedido> detalles = (ArrayList<DetallePedido>)request.getSession().getAttribute("det");
         Pedido pedido = new Pedido();

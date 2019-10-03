@@ -12,6 +12,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import negocio.ProductoInventario;
 import negocio.Region;
+import util.Mensaje;
 import util.ServiceLocator;
 
 /**
@@ -23,7 +24,7 @@ public class RegionDAO {
         ArrayList<Region> regiones = new ArrayList<Region>();
         try{
             String strSQL = "select * from \"region\"";
-            Connection conexion = ServiceLocator.getInstance().tomarConexion();
+            Connection conexion = ServiceLocator.getInstance().tomarConexion(new String(),new String(),new Mensaje());
             PreparedStatement prepStmt = conexion.prepareStatement(strSQL);
             ResultSet resultado = prepStmt.executeQuery();
             while(resultado.next()){

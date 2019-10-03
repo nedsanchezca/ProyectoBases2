@@ -5,26 +5,18 @@
  */
 package presentacion;
 
-import datos.ClienteDAO;
-import datos.PedidoDAO;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.ArrayList;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import negocio.Cliente;
-import negocio.DetallePedido;
-import negocio.Pedido;
-import negocio.Representante;
-import util.Mensaje;
 
 /**
  *
  * @author thrash
  */
-public class registroPedido extends HttpServlet {
+public class logout extends HttpServlet {
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -38,33 +30,14 @@ public class registroPedido extends HttpServlet {
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
-        Representante rep = (Representante)request.getSession().getAttribute("rep");
-        ArrayList<Cliente> aClientes = (ArrayList<Cliente>)request.getSession().getAttribute("aclientes");
-        Cliente cliente = aClientes.get(Integer.parseInt(request.getParameter("cliente")));
-        Mensaje ex = new Mensaje();
-        ArrayList<DetallePedido> detalles = (ArrayList<DetallePedido>)request.getSession().getAttribute("det");
-        Pedido pedido = new Pedido();
-        pedido.setCliente(cliente);
-        pedido.setItems(detalles);
-        PedidoDAO dao = new PedidoDAO((String)request.getSession().getAttribute("usr"),(String)request.getSession().getAttribute("pass"));
-        dao.registrarPedido(pedido, ex);
-        if(ex.getMensaje()==null){
-            request.getSession().setAttribute("det", null);
-            request.getSession().setAttribute("pro", null);
-            response.sendRedirect("/Multinivel/formulario_Venta.jsp");
-        }else{
-            try (PrintWriter out = response.getWriter()) {
-                out.println("<meta http-equiv='refresh' content='3;URL=formulario_Venta.jsp'>");
-                out.println("<html>");
-                out.println("<head>");
-                out.println("<title>Servlet testing</title>");            
-                out.println("</head>");
-                out.println("<body>");
-                out.println("<h1>Servlet testing at " + ex+ "</h1>");
-                out.println("</body>");
-                out.println("</html>");
-            }
-        }
+        request.getSession().setAttribute("det", null);
+        request.getSession().setAttribute("pro", null);
+        request.getSession().setAttribute("arrPed", null);
+        request.getSession().setAttribute("rep", null);
+        request.getSession().setAttribute("cli", null);
+        request.getSession().setAttribute("usr", null);
+        request.getSession().setAttribute("pass", null);
+        response.sendRedirect("");
     }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
