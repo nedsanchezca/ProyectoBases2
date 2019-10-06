@@ -40,7 +40,10 @@ public class registroPedido extends HttpServlet {
         response.setContentType("text/html;charset=UTF-8");
         Representante rep = (Representante)request.getSession().getAttribute("rep");
         ArrayList<Cliente> aClientes = (ArrayList<Cliente>)request.getSession().getAttribute("aclientes");
-        Cliente cliente = aClientes.get(Integer.parseInt(request.getParameter("cliente")));
+        Cliente cliente = new Cliente();
+        if(request.getParameter("cliente") != null){
+            cliente = aClientes.get(Integer.parseInt(request.getParameter("cliente")));
+        }
         Mensaje ex = new Mensaje();
         ArrayList<DetallePedido> detalles = (ArrayList<DetallePedido>)request.getSession().getAttribute("det");
         Pedido pedido = new Pedido();

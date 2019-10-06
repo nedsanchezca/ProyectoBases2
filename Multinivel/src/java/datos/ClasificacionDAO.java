@@ -30,7 +30,7 @@ public class ClasificacionDAO {
     public Clasificacion obtenerClasificacion(int codigo, Mensaje ex){
         Clasificacion clasificacion = new Clasificacion();
         try{
-            String strSQL = "select N_NOMBRE,V_COMISION from natame.\"clasificacion\" where K_ID=?";
+            String strSQL = "select N_NOMBRE,V_COMISION from clasificacion where K_ID=?";
             Connection conexion = ServiceLocator.getInstance().tomarConexion(usr,pass,ex);
             PreparedStatement prepStmt = conexion.prepareStatement(strSQL);
             prepStmt.setInt(1, codigo);

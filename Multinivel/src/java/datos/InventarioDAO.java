@@ -31,7 +31,7 @@ public class InventarioDAO {
         ArrayList<ProductoInventario> inventario = new ArrayList<ProductoInventario>();
         try{
             String strSQL = "select p.K_CODIGO_PRODUCTO,p.N_NOMBRE_PRODUCTO "
-                    + "from natame.\"inventario\" i,natame.\"producto\" p "
+                    + "from inventario i,producto p "
                     + "GROUP BY i.F_CODIGO_POSTAL,p.N_NOMBRE_PRODUCTO,i.F_CODIGO_PRODUCTO,p.K_CODIGO_PRODUCTO "
                     + "HAVING i.F_CODIGO_PRODUCTO=p.K_CODIGO_PRODUCTO and i.F_CODIGO_POSTAL=?";
             Connection conexion = ServiceLocator.getInstance().tomarConexion(usr,pass,ex);
@@ -56,7 +56,7 @@ public class InventarioDAO {
     public ProductoInventario obtenerProducto(int idProd,Mensaje ex){
         ProductoInventario leido = null;
         try{
-            String strSQL = "select * from natame.v_producto where K_ID=?";
+            String strSQL = "select * from v_producto where K_ID=?";
             Connection conexion = ServiceLocator.getInstance().tomarConexion(usr,pass,ex);
             PreparedStatement prepStmt = conexion.prepareStatement(strSQL);
             prepStmt.setInt(1,idProd);

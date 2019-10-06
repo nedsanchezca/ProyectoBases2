@@ -23,7 +23,7 @@ public class RegionDAO {
     public ArrayList<Region> obtenerInventario(){
         ArrayList<Region> regiones = new ArrayList<Region>();
         try{
-            String strSQL = "select * from \"region\"";
+            String strSQL = "select * from region";
             Connection conexion = ServiceLocator.getInstance().tomarConexion(new String(),new String(),new Mensaje());
             PreparedStatement prepStmt = conexion.prepareStatement(strSQL);
             ResultSet resultado = prepStmt.executeQuery();

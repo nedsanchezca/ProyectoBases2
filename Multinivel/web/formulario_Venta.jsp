@@ -187,7 +187,9 @@
             <%;
             if(rep!=null&&pedidos==null){
                 ClienteDAO dao1 = new ClienteDAO((String)request.getSession().getAttribute("usr"),(String)request.getSession().getAttribute("pass"));
+                System.out.println(rep.getTipoId()+rep.getIdRep()+"jlkhghjhkjghkfgdfghjhgf");
                 ArrayList<Cliente> clientes = dao1.obtenerClientes(rep, new Mensaje());
+                System.out.println(clientes.size());
                 i=0;
                 out.println("<label for=\"K_TIPO_ID\">Cliente: </label>");
                 out.println("<select class=\"form-control\" id=\"cliente\" name=\"cliente\">");

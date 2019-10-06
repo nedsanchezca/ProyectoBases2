@@ -59,6 +59,7 @@ public class registroRepVentas extends HttpServlet {
             repI.setClasificacion(1);
         }
         Mensaje ex = repD.incluirRepresentante(repI);
+        System.out.println("holissssssssssss");
         if(ex.getMensaje()==null){
             request.getSession().setAttribute("rep", rep);
             response.sendRedirect("/Multinivel/formulario_Nuevo_Rep.html");
