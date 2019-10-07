@@ -47,7 +47,7 @@ public class modificacionPedido extends HttpServlet {
             request.getSession().setAttribute("pro", null);
             request.getSession().setAttribute("arrPed", null);
             
-            response.sendRedirect("/Multinivel/index.html");
+            response.sendRedirect("/Multinivel/pagina_Lobby.jsp");
         }else{
             try (PrintWriter out = response.getWriter()) {
                 out.println("<meta http-equiv='refresh' content='3;URL=formulario_Venta.jsp'>");

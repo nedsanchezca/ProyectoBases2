@@ -73,6 +73,7 @@ GRANT SELECT ON rep_ventas TO r_cliente;
 GRANT SELECT ON cliente TO r_cliente;
 GRANT SELECT,UPDATE (v_disponibilidad) ON inventario TO r_cliente;
 GRANT SELECT,UPDATE ON calificacion TO r_cliente;
+GRANT SELECT ON pedido_seq TO r_cliente;
 GRANT SELECT ON v_producto TO r_cliente;
 
 CREATE ROLE r_visitante;
