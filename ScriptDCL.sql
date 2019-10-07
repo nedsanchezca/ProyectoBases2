@@ -23,7 +23,7 @@ CREATE PUBLIC SYNONYM inventario FOR natame.inventario;
 CREATE PUBLIC SYNONYM producto FOR natame.producto;
 CREATE PUBLIC SYNONYM producto_subcategoria FOR natame.producto_subcategoria;
 CREATE PUBLIC SYNONYM subcategoria FOR natame.subcategoria;
-CREATE PUBLIC SYNONYM categoria FOR natame.categoria;﻿
+CREATE PUBLIC SYNONYM categoria FOR natame.categoria;
 CREATE PUBLIC SYNONYM v_producto FOR natame.v_producto;
 
 CREATE ROLE r_RepVentasMaster;
