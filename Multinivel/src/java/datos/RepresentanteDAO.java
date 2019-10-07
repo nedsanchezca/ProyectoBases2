@@ -28,15 +28,18 @@ public class RepresentanteDAO {
     }
 
     public Mensaje incluirRepresentante(Representante representante) {
+        System.out.println("Acabé de entrar");
         Mensaje mensaje = new Mensaje();
         Connection conexion = ServiceLocator.getInstance().tomarConexion(usr, pass, mensaje);
         try {
-            String strSQL = "INSERT INTO natame.\"persona\" VALUES(?,?,?,?,?,?)";
-            PreparedStatement prepStmt = conexion.prepareStatement("select count(*) from natame.\"persona\" where K_NUMERO_ID=? and K_TIPO_ID=?");
+            System.out.println("Acabé de entrar al try");
+            String strSQL = "INSERT INTO persona VALUES(?,?,?,?,?,?)";
+            PreparedStatement prepStmt = conexion.prepareStatement("select count(*) from persona where K_NUMERO_ID=? and K_TIPO_ID=?");
             prepStmt.setString(1, representante.getIdRep());
             prepStmt.setString(2, Character.toString(representante.getTipoId()));
             ResultSet resultado = prepStmt.executeQuery();
             resultado.next();
+            System.out.println("Superé la persona yeih111");
             if (resultado.getInt(1) == 0) {
                 prepStmt = conexion.prepareStatement(strSQL);
                 prepStmt.setString(1, representante.getIdRep());
@@ -47,20 +50,25 @@ public class RepresentanteDAO {
                 prepStmt.setString(6, representante.getCiudad());
                 prepStmt.executeUpdate();
             }
-            strSQL = "INSERT INTO natame.\"rep_ventas\" VALUES(?,?,?,?,?,sysdate,?,?,?,?,?)";
+            System.out.println("Superé la persona yeih");
+            strSQL = "INSERT INTO rep_ventas VALUES(?,?,?,?,?,sysdate,?,?,?,?,?)";
             prepStmt = conexion.prepareStatement(strSQL);
             prepStmt.setString(1, representante.getIdRep());
             prepStmt.setString(2, Character.toString(representante.getTipoId()));
             prepStmt.setString(3, representante.getCorreo());
             prepStmt.setBigDecimal(4, representante.getTelefono());
             prepStmt.setString(5, representante.getGenero());
+            System.out.println("Antes de la fecha");
             prepStmt.setDate(6, java.sql.Date.valueOf(representante.getFechaNacimiento()));
+            System.out.println("Después de la fecha");
             prepStmt.setInt(7, representante.getClasificacion());
             prepStmt.setString(8, representante.getCaptadorId());
             prepStmt.setString(9, representante.getCaptadorTipo());
             prepStmt.setString(10, representante.getCodigoPostal());
             prepStmt.executeUpdate();
 
+            System.out.println("Pase primera parte");
+            
             ServiceLocator.getInstance().commit();
             ServiceLocator.getInstance().liberarConexion();
             conexion = ServiceLocator.getInstance().tomarConexion("natame", "natame", mensaje);
@@ -72,11 +80,14 @@ public class RepresentanteDAO {
             prepStmt.execute();
             prepStmt.close();
             mensaje.setMensaje(null);
-        } catch (SQLException e) {
+            System.out.println("Lleguéeeeeee");
+        } catch (Exception e) {
             ServiceLocator.getInstance().rollback();
             mensaje.setMensaje(e.getLocalizedMessage());
+            System.out.println(e);
         } finally {
             ServiceLocator.getInstance().liberarConexion();
+            System.out.println("desde el finally");
             return mensaje;
         }
 
@@ -88,7 +99,7 @@ public class RepresentanteDAO {
         rep.setTipoId(tipoId.charAt(0));
         rep.setIdRep(numeroId);
         try {
-            String strSQL = "select * from natame.\"persona\" where K_TIPO_ID=? and K_NUMERO_ID=?";
+            String strSQL = "select * from persona where K_TIPO_ID=? and K_NUMERO_ID=?";
             Connection conexion = ServiceLocator.getInstance().tomarConexion(usr,pass,m);
             PreparedStatement prepStmt = conexion.prepareStatement(strSQL);
             prepStmt.setString(1, tipoId);
@@ -101,7 +112,7 @@ public class RepresentanteDAO {
                 rep.setCiudad(resultado.getString(6));
             }
 
-            strSQL = "select * from natame.\"rep_ventas\" where F_TIPO_ID=? and F_NUMERO_ID=?";
+            strSQL = "select * from rep_ventas where F_TIPO_ID=? and F_NUMERO_ID=?";
 
             prepStmt = conexion.prepareStatement(strSQL);
             prepStmt.setString(1, tipoId);
