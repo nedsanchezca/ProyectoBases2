@@ -1,3 +1,24 @@
+insert into "producto" values(1,"Omega 3");
+insert into "producto" values(2,"ComplexDual");
+insert into "producto" values(3,"BodyCay");
+insert into "producto" values(4,"Ac Plus");
+insert into "producto" values(5,"Caltrate natural");
+insert into "producto" values(6,"Cepillo de dientes");
+insert into "producto" values(7,"Jabon");
+insert into "producto" values(8,"Shampoo");
+insert into "producto" values(9,"Exfoliante");
+insert into "producto" values(10,"Crema dental");
+insert into "producto" values(11,"Labial");
+insert into "producto" values(12,"Polvos");
+insert into "producto" values(13,"Mascarilla");
+insert into "producto" values(14,"Esmalte");
+insert into "producto" values(15,"Pestañina");
+insert into "producto" values(16,"Papel higienico");
+insert into "producto" values(17,"Escoba");
+insert into "producto" values(18,"Ambientador");
+insert into "producto" values(19,"Trapero");
+insert into "producto" values(20,"Limpia vidrios");
+
 insert into "subcategoria" values(1, 'Vitaminas', 1);
 insert into "subcategoria" values(2, 'Proteinas', 1);
 insert into "subcategoria" values(3, 'Maquillaje', 2);
