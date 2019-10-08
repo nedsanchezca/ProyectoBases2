@@ -12,16 +12,16 @@ import java.math.BigDecimal;
  * @author thrash
  */
 public class Cliente {
-    private String idCliente;
+    private String idCliente = null;
     private char tipoId;
-    private String nombre;
-    private String apellido;
-    private String direccion;
-    private String ciudad;
-    private BigDecimal telefono;
-    private String correo;
-    private String idRep;
-    private String tipoIdRep;
+    private String nombre = null;
+    private String apellido = null;
+    private String direccion = null;
+    private String ciudad = null;
+    private BigDecimal telefono = null;
+    private String correo = null;
+    private String idRep = null;
+    private String tipoIdRep = null;
 
     public String getIdCliente() {
         return idCliente;

@@ -47,7 +47,7 @@ public class ServiceLocator {
 	private ServiceLocator() throws Exception {
 		try {
                      DriverManager.registerDriver (new oracle.jdbc.driver.OracleDriver());
-                     conexion = DriverManager.getConnection("jdbc:oracle:thin:@localhost:1521:xe","natame","natame");
+                     conexion = DriverManager.getConnection("jdbc:oracle:thin:@localhost:1522:xe","natame","natame");
 		     conexion.setAutoCommit(false);
 		} catch (Exception e) {
                     System.out.print(e);
@@ -69,7 +69,7 @@ public class ServiceLocator {
 		}
 		conexionLibre = false;
                 try {
-                    conexion = DriverManager.getConnection("jdbc:oracle:thin:@localhost:1521:xe",usr,pass);
+                    conexion = DriverManager.getConnection("jdbc:oracle:thin:@localhost:1522:xe",usr,pass);
                     conexion.setAutoCommit(false);
                     notify();
                 } catch (SQLException ex) {
@@ -150,7 +150,7 @@ public class ServiceLocator {
         
         public void restaurarConexion(){
             try {
-                conexion = DriverManager.getConnection("jdbc:oracle:thin:@localhost:1521:xe","natame","natame");
+                conexion = DriverManager.getConnection("jdbc:oracle:thin:@localhost:1522:xe","natame","natame");
                 conexion.setAutoCommit(false);
             } catch (SQLException ex) {
                 System.out.print(ex);

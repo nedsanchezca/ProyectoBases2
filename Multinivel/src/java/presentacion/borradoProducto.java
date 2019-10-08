@@ -33,13 +33,23 @@ public class borradoProducto extends HttpServlet {
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
+        
+        //Se obtienen los arreglos con los detalles de productos hasta el momento
         ArrayList<DetallePedido> detalles = (ArrayList<DetallePedido>)request.getSession().getAttribute("det");
         ArrayList<ProductoInventario> productos = (ArrayList<ProductoInventario>)request.getSession().getAttribute("pro");
+        
+        //Se obtiene el número del detalle a borrar
         int borrado = Integer.parseInt(request.getParameter("borrar").substring(6));
+        
+        //Se remueve el detalle del arreglo
         detalles.remove(borrado-1);
         productos.remove(borrado-1);
+        
+        //Se guardan los nuevos arreglos
         request.getSession().setAttribute("det", detalles);
         request.getSession().setAttribute("pro", productos);
+        
+        //Se redirecciona al formulario de venta
         response.sendRedirect("/Multinivel/formulario_Venta.jsp");
     }
 

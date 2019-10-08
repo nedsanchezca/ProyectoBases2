@@ -9,7 +9,6 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import negocio.Clasificacion;
 import util.Mensaje;
 import util.ServiceLocator;
@@ -22,30 +21,51 @@ public class ClasificacionDAO {
     private String usr;
     private String pass;
     
+    /**
+     * 
+     * @param usr Usuario que requiere conexión
+     * @param pass Contraseña de usuario que requiere conexión
+     */
     public ClasificacionDAO(String usr, String pass){
         this.usr = usr;
         this.pass = pass;
     }
     
+    /**
+     * 
+     * @param codigo llave primaria de la clasificación
+     * @param ex variable auxiliar para mensajes de error
+     * @return 
+     */
     public Clasificacion obtenerClasificacion(int codigo, Mensaje ex){
         Clasificacion clasificacion = new Clasificacion();
         try{
-            String strSQL = "select N_NOMBRE,V_COMISION from clasificacion where K_ID=?";
+            //Conexión con el usuario actual
             Connection conexion = ServiceLocator.getInstance().tomarConexion(usr,pass,ex);
+            
+            //Ejecución de la sentencia SQL
+            String strSQL = "select N_NOMBRE,V_COMISION from clasificacion where K_ID=?";
             PreparedStatement prepStmt = conexion.prepareStatement(strSQL);
             prepStmt.setInt(1, codigo);
             ResultSet resultado = prepStmt.executeQuery();
+            
+            //Se crea un objeto de tipo clasificación y se configura
             while(resultado.next()){
                 clasificacion.setNombre(resultado.getString(1));
                 clasificacion.setComision(resultado.getDouble(2));
             }
             prepStmt.close();
+            
         }catch(SQLException e){
+            //Si hay un error, se configura el mensaje y se retorna nulo
             ex.setMensaje(e.getLocalizedMessage());
             return null;
         }finally{
+            //Siempre se debe liberar la conexión, haya o no un error
             ServiceLocator.getInstance().liberarConexion();
         }
+        
+        //Si no hay errores, se retorna la clasificación
         return clasificacion;
     }
 }

@@ -13,8 +13,15 @@ import util.ServiceLocator;
  * @author Nestor
  */
 public class AutenticacionDAO {
+    /**
+     * 
+     * @param usr usuario que requiere autenticación
+     * @param pass contraseña del usuario que requiere autenticación
+     * @return 
+     */
     public Mensaje autenticar(String usr,String pass){
         Mensaje ex = new Mensaje();
+        //Toma y libera la conexión para verificar un usuario válido
         ServiceLocator.getInstance().tomarConexion(usr,pass,ex);
         ServiceLocator.getInstance().liberarConexion();
         return ex;

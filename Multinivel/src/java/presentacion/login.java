@@ -61,8 +61,14 @@ public class login extends HttpServlet {
             
             if(rep!=null){
                 cla = claD.obtenerClasificacion(rep.getClasificacion(), ex);
+            }else{
+                rep = new Representante();
             }
             
+            if(cli ==null){
+                cli = new Cliente();
+            }
+
             request.getSession().setAttribute("rep", rep);
             request.getSession().setAttribute("cli", cli);
             request.getSession().setAttribute("usr", usr);

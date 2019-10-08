@@ -25,20 +25,36 @@ public class ClienteDAO {
     String usr;
     String pass;
     
+    /**
+     * 
+     * @param usr usuario que requiere autenticación
+     * @param pass contraseña del usuario que requiere autenticación
+     */
     public ClienteDAO(String usr, String pass){
         this.usr = usr;
         this.pass = pass;
     }
     
+    
+    /**
+     * Guarda un cliente, basado en un objeto cliente
+     * @param cliente Objeto con los datos del cliente a almacenar
+     * @param ex Auxiliar para retornar mensaje de error
+     */
     public void incluirCliente(Cliente cliente,Mensaje ex){
       try {
-        String strSQL = "INSERT INTO persona VALUES(?,?,?,?,?,?)";
+        //Toma la conexión con el usuario actual
         Connection conexion = ServiceLocator.getInstance().tomarConexion(usr,pass,ex);
+        
+        //Ejecución de la sentencia SQL
+        String strSQL = "INSERT INTO persona VALUES(?,?,?,?,?,?)";
         PreparedStatement prepStmt = conexion.prepareStatement("select count(*) from persona where K_NUMERO_ID=? and K_TIPO_ID=?");
         prepStmt.setString(1, cliente.getIdCliente());
         prepStmt.setString(2, Character.toString(cliente.getTipoId()));
         ResultSet resultado = prepStmt.executeQuery();
         resultado.next();
+        
+        //Si ya existe una persona con este id, no se llena la tabla persona
         if(resultado.getInt(1)==0){
             prepStmt = conexion.prepareStatement(strSQL);
             prepStmt.setString(1, cliente.getIdCliente()); 
@@ -49,6 +65,8 @@ public class ClienteDAO {
             prepStmt.setString(6, cliente.getCiudad());  
             prepStmt.executeUpdate();
         }
+        
+        //Ejecución de la sentencia de inserción
         strSQL = "INSERT INTO cliente VALUES(?,?,?,?,?,?)";
         prepStmt = conexion.prepareStatement(strSQL);
         prepStmt.setString(1, cliente.getIdCliente()); 
@@ -59,26 +77,45 @@ public class ClienteDAO {
         prepStmt.setString(6, Character.toString(cliente.getTipoId()));
         prepStmt.executeUpdate();
         prepStmt.close();
+        
+        //Commit para guardar todos los cambios.
         ServiceLocator.getInstance().commit();
       } catch (SQLException e) {
+          //Si hay un error, se actualiza el mensaje de error
           ex.setMensaje(e.getLocalizedMessage());
       }  finally {
+          //Siempre se libera la conexión
          ServiceLocator.getInstance().liberarConexion();
       }
     }
     
+    /**
+     * Obtiene un cliente a partir de su id
+     * @param tipoId tipo de id del cliente
+     * @param numeroId id del cliente
+     * @param ex auxiliar para mensajes de error
+     * @return 
+     */
     public Cliente obtenerCliente(String tipoId, String numeroId,Mensaje ex){
+        
+      //Declaraciones iniciales
       int contador=0;
       Cliente cliente = new Cliente();
       cliente.setTipoId(tipoId.charAt(0));
       cliente.setIdCliente(numeroId);
       try{
-            String strSQL = "select * from persona where K_TIPO_ID=? and K_NUMERO_ID=?";
+          
+            //Toma la conexión para el usuario actual
             Connection conexion = ServiceLocator.getInstance().tomarConexion(usr,pass,ex);
+            
+            //Ejecución de la sentencia SQL de persona
+            String strSQL = "select * from persona where K_TIPO_ID=? and K_NUMERO_ID=?";
             PreparedStatement prepStmt = conexion.prepareStatement(strSQL);
             prepStmt.setString(1, tipoId);
             prepStmt.setString(2, numeroId);
             ResultSet resultado = prepStmt.executeQuery();
+            
+            //Configuración del objeto cliente
             while(resultado.next()){
                 cliente.setNombre(resultado.getString(3));
                 cliente.setApellido(resultado.getString(4));
@@ -86,13 +123,14 @@ public class ClienteDAO {
                 cliente.setCiudad(resultado.getString(6));
             }
             
+            //Ejecución de la sentencia SQL
             strSQL = "select * from cliente where F_TIPO_ID=? and F_NUMERO_ID=?";
-            
             prepStmt = conexion.prepareStatement(strSQL);
             prepStmt.setString(1, tipoId);
             prepStmt.setString(2, numeroId);
             resultado = prepStmt.executeQuery();
             
+            //Configuración del objeto cliente
             while(resultado.next()){
                 cliente.setTelefono(resultado.getBigDecimal(3));
                 cliente.setCorreo(resultado.getString(4));
@@ -101,31 +139,47 @@ public class ClienteDAO {
                 contador++;
             }
             prepStmt.close();
+            
         }catch(SQLException e){
-            System.out.print(e);
+            //Se configura el mensaje de error
+            ex.setMensaje(e.getLocalizedMessage());
             return null;
         }finally{
+            //Se libera la conexión siempre
             ServiceLocator.getInstance().liberarConexion();
         }
+        
+        //Una consulta vacía no genera error, pero debe manejarse
         if(contador==0){
             cliente = null;
         }
+        
+        //Se retorna el objeto cliente
         return cliente;
     }
 
+    /**
+     * Se obtiene un arreglo de clientes que están a cargo de un representante
+     * @param rep representante a consultar
+     * @param ex auxiliar para mensajes de error
+     * @return 
+     */
     public ArrayList<Cliente> obtenerClientes(Representante rep,Mensaje ex){
       ArrayList<Cliente> clientes = new ArrayList<Cliente>();
       try{
+            //Tomar la conexión
+            Connection conexion = ServiceLocator.getInstance().tomarConexion(usr,pass,ex);
+            
+            //Ejecución de la sentencia SQL
             String strSQL = "select p.N_NOMBRE, p.N_APELLIDO, p.A_DIRECCION, p.C_CIUDAD, c.* from persona p, cliente c "
                     + "where p.K_TIPO_ID=c.F_TIPO_ID and p.K_NUMERO_ID=c.F_NUMERO_ID and c.F_TIPO_ID_REP_VENTAS=? and c.F_ID_REP_VENTAS=?";
-            Connection conexion = ServiceLocator.getInstance().tomarConexion(usr,pass,ex);
             PreparedStatement prepStmt = conexion.prepareStatement(strSQL);
             prepStmt.setString(1, Character.toString(rep.getTipoId()));
             prepStmt.setString(2, rep.getIdRep());
             ResultSet resultado = prepStmt.executeQuery();
             
+            //configuración del objeto cliente con el resultado de la búsqueda.
             while(resultado.next()){
-                System.out.println("14312");
                 Cliente cliente = new Cliente();
                 cliente.setNombre(resultado.getString(1));
                 cliente.setApellido(resultado.getString(2));
@@ -140,9 +194,12 @@ public class ClienteDAO {
                 clientes.add(cliente);
             }
             prepStmt.close();
+            
         }catch(SQLException e){
-            System.out.print(e);
+            //Mensaje de error
+            ex.setMensaje(e.getLocalizedMessage());
         }finally{
+            //Se libera siempre la conexión
             ServiceLocator.getInstance().liberarConexion();
         }
         return clientes;

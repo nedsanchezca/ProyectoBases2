@@ -1,16 +1,8 @@
-create view P_USR_TAB as select a.GRANTEE, r.PRIVILEGE,r.ROLE,r.TABLE_NAME from dba_role_privs a, role_tab_privs r where a.GRANTED_ROLE=r.ROLE and  a.GRANTEE='C1070983623';
-create view P_USR_SYS as select a.GRANTEE, r.PRIVILEGE,r.ROLE from dba_role_privs a, role_sys_privs r where a.GRANTED_ROLE=r.ROLE and  a.GRANTEE='C1070983623';;
-create view P_ROL_TAB as select role,privilege from role_tab_privs where role = 'R_REPVENTAS';
-create view P_ROL_SYS as select role,privilege from role_sys_privs where role = 'NATAME';
+create view P_USR_TAB as select a.GRANTEE, r.PRIVILEGE,r.ROLE,r.TABLE_NAME from dba_role_privs a, role_tab_privs r where a.GRANTED_ROLE=r.ROLE;
+create view P_USR_SYS as select a.GRANTEE, r.PRIVILEGE,r.ROLE from dba_role_privs a, role_sys_privs r where a.GRANTED_ROLE=r.ROLE and  a.GRANTEE='C1070983623';
+create view P_ROL_TAB as select role,privilege,table_name from role_tab_privs;
+create view P_ROL_SYS as select role,privilege,null as table_name from role_sys_privs;
 
-create public synonym person for natame."persona";
-
-
-grant update(V_DISPONIBILIDAD) on natame."inventario" to R_REPVENTAS_MASTER;
-
-grant select on natame."inventario" to R_REPVENTAS_MASTER;
-
-select p.N_NOMBRE, p.N_APELLIDO, p.A_DIRECCION, p.C_CIUDAD, c.* from persona p, cliente c where p.K_TIPO_ID=c.F_TIPO_ID and p.K_NUMERO_ID=c.F_NUMERO_ID and c.F_TIPO_ID_REP_VENTAS='C' and c.F_ID_REP_VENTAS='1023961590';
 
 select a.privilege, b.privilege from role_tab_privs a full join role_sys_privs b on a.role=b.role
 
@@ -18,4 +10,22 @@ select a.grantee, b.* from dba_role_privs a,(select a.role, a.privilege tabla, a
 
 select * from dba_sys_privs  where grantee = 'SYSTEM' or grantee in(select granted_role from dba_role_privs connect by prior granted_role = grantee start with grantee = 'SYSTEM') order by 1,2,3;
 
+select *
+from role_tab_privs a
+left outer join role_sys_privs b
+on a.role=b.role where a.role='R_CLIENTE';
 
+
+
+select a.*, b.privilege from (select a.GRANTEE, r.PRIVILEGE,r.ROLE,r.TABLE_NAME from dba_role_privs a, role_tab_privs r where a.GRANTED_ROLE=r.ROLE) a
+left outer join role_sys_privs b on a.privilege=b.privilege where a.grantee='C51896951';
+
+select a.*, b.privilege from (select a.GRANTEE, r.PRIVILEGE,r.ROLE,r.TABLE_NAME from dba_role_privs a, role_tab_privs r where a.GRANTED_ROLE=r.ROLE) a
+right outer join (select a.GRANTEE, r.PRIVILEGE,r.ROLE from dba_role_privs a, role_sys_privs r where a.GRANTED_ROLE=r.ROLE) b on a.privilege=b.privilege where a.grantee='C51896951';
+
+//Vista para listar los privilegios de usuario
+create view P_USR as select * from (select a.GRANTEE,r.ROLE,r.PRIVILEGE,r.TABLE_NAME from dba_role_privs a, role_tab_privs r where a.GRANTED_ROLE=r.ROLE union all select a.GRANTEE,r.ROLE, r.PRIVILEGE,null as TABLE_NAME from dba_role_privs a, role_sys_privs r where a.GRANTED_ROLE=r.ROLE);
+
+create view P_ROL as select * from (select role,privilege,table_name from role_tab_privs union all select role,privilege,null as table_name from role_sys_privs);
+
+select a.GRANTEE, r.PRIVILEGE,r.ROLE,null as TABLE_NAME from dba_role_privs a, role_sys_privs r where a.GRANTED_ROLE=r.ROLE and a.grantee='C51896951';

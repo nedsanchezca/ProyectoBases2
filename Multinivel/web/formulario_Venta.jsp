@@ -79,19 +79,6 @@
                         <input type="text" name="cantidad">
                     </div>
                     <div class="column">
-                        <h4>Region</h4>
-                    </div>
-                <div class="column">
-                    <a class="btn btn-secondary dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                        ----
-                    </a>
-                    <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
-                        <a class="dropdown-item" href="#">Bogotá</a>
-                        <a class="dropdown-item" href="#">Amazonía</a>
-                        
-                    </div>
-                </div>
-                    <div class="column">
                         <input type="submit" value="Agregar" class="btn btn-dark">
                     </div>    
                 </div>
@@ -113,11 +100,17 @@
             </thead>
             <tbody>
                 <%
+                    boolean modificar = false;
+                    if(request.getSession().getAttribute("modificado")!=null){
+                        modificar = (Boolean) request.getSession().getAttribute("modificado");
+                    }
                     Representante rep = (Representante) request.getSession().getAttribute("rep");
                     Cliente cli = (Cliente) request.getSession().getAttribute("cli");
                     ArrayList<Pedido> pedidos = (ArrayList<Pedido>)request.getSession().getAttribute("arrPed");
                     Pedido mod = null;
                     if(request.getParameter("mod")!=null){
+                        modificar =true;
+                        request.getSession().setAttribute("modificado",true);
                         mod = pedidos.get(Integer.parseInt(request.getParameter("mod")));
                         request.getSession().setAttribute("pedidoMod", mod);
                     }
@@ -185,11 +178,9 @@
     <form action=registroPedido>
     <div class="form-group">
             <%;
-            if(rep!=null&&pedidos==null){
+            if(!modificar){
                 ClienteDAO dao1 = new ClienteDAO((String)request.getSession().getAttribute("usr"),(String)request.getSession().getAttribute("pass"));
-                System.out.println(rep.getTipoId()+rep.getIdRep()+"jlkhghjhkjghkfgdfghjhgf");
                 ArrayList<Cliente> clientes = dao1.obtenerClientes(rep, new Mensaje());
-                System.out.println(clientes.size());
                 i=0;
                 out.println("<label for=\"K_TIPO_ID\">Cliente: </label>");
                 out.println("<select class=\"form-control\" id=\"cliente\" name=\"cliente\">");
@@ -202,16 +193,16 @@
             }
             %>        
     </div>
-        <%if(rep!=null&&pedidos==null){%>
+        <%if(!modificar){%>
             <input type="submit" value = "enviar como representante" class="btn btn-dark">
         <%}%>
     </form>
-    <%if(cli!=null){%>
+    <%if(!modificar){%>
     <form action=registroPedidoC>
         <input type="submit" value = "enviar como cliente" class="btn btn-dark">
     </form>
     <%}%>
-    <%if(pedidos!=null){%>
+    <%if(modificar){%>
     <form action=modificacionPedido>
         <input type="submit" value = "Modificar" class="btn btn-dark">
     </form>

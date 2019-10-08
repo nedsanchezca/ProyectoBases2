@@ -13,7 +13,6 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import negocio.Cliente;
 import negocio.DetallePedido;
 import negocio.Pedido;
 import util.Mensaje;
@@ -36,18 +35,19 @@ public class modificacionPedido extends HttpServlet {
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
+        
         Mensaje ex = new Mensaje();
         ArrayList<DetallePedido> detalles = (ArrayList<DetallePedido>)request.getSession().getAttribute("det");
         Pedido pedido = (Pedido)request.getSession().getAttribute("pedidoMod");
         pedido.setItems(detalles);
         PedidoDAO dao = new PedidoDAO((String)request.getSession().getAttribute("usr"),(String)request.getSession().getAttribute("pass"));
-        dao.modificarPedido(pedido,new Mensaje());
+        dao.modificarPedido(pedido,ex);
         if(ex.getMensaje()==null){
             request.getSession().setAttribute("det", null);
             request.getSession().setAttribute("pro", null);
             request.getSession().setAttribute("arrPed", null);
-            
-            response.sendRedirect("/Multinivel/pagina_Lobby.jsp");
+            request.getSession().setAttribute("modificado", false);
+            response.sendRedirect("/Multinivel/formulario_Venta.jsp");
         }else{
             try (PrintWriter out = response.getWriter()) {
                 out.println("<meta http-equiv='refresh' content='3;URL=formulario_Venta.jsp'>");

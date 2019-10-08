@@ -27,40 +27,66 @@ public class InventarioDAO {
         this.pass = pass;
     }
     
+    /**
+     * Obtención del inventario de una región
+     * @param codPostal
+     * @param ex
+     * @return 
+     */
     public ArrayList<ProductoInventario> obtenerInventario(String codPostal,Mensaje ex){
         ArrayList<ProductoInventario> inventario = new ArrayList<ProductoInventario>();
         try{
+            //Tomar la conexión para el usuario actual
+            Connection conexion = ServiceLocator.getInstance().tomarConexion(usr,pass,ex);
+            
+            //Ejecución de la sentencia SQL
             String strSQL = "select p.K_CODIGO_PRODUCTO,p.N_NOMBRE_PRODUCTO "
                     + "from inventario i,producto p "
                     + "GROUP BY i.F_CODIGO_POSTAL,p.N_NOMBRE_PRODUCTO,i.F_CODIGO_PRODUCTO,p.K_CODIGO_PRODUCTO "
                     + "HAVING i.F_CODIGO_PRODUCTO=p.K_CODIGO_PRODUCTO and i.F_CODIGO_POSTAL=?";
-            Connection conexion = ServiceLocator.getInstance().tomarConexion(usr,pass,ex);
+            
             PreparedStatement prepStmt = conexion.prepareStatement(strSQL);
             prepStmt.setString(1,codPostal);
             ResultSet inventarioSQL = prepStmt.executeQuery();
+            
+            //Construir el inventario de la región
             while(inventarioSQL.next()){
                 ProductoInventario leido = new ProductoInventario();
                 leido.setIdProducto(inventarioSQL.getInt(1));
                 leido.setNombreProducto(inventarioSQL.getString(2));
                 inventario.add(leido);
             }
+            
             prepStmt.close();
         }catch(SQLException e){
+            //Mensaje de error
             ex.setMensaje(e.getLocalizedMessage());
         }finally{
+            //Siempre se libera la conexión
             ServiceLocator.getInstance().liberarConexion();
         }
         return inventario;
     }
     
+    /**
+     * Se obtiene un producto de unventario basado en su código
+     * @param idProd
+     * @param ex
+     * @return 
+     */
     public ProductoInventario obtenerProducto(int idProd,Mensaje ex){
         ProductoInventario leido = null;
         try{
-            String strSQL = "select * from v_producto where K_ID=?";
+            //Tomar conexión para el usuario actual
             Connection conexion = ServiceLocator.getInstance().tomarConexion(usr,pass,ex);
+            
+            //Ejecución de la sentencia SQL
+            String strSQL = "select * from v_producto where K_ID=?";
             PreparedStatement prepStmt = conexion.prepareStatement(strSQL);
             prepStmt.setInt(1,idProd);
             ResultSet inventarioSQL = prepStmt.executeQuery();
+            
+            //Configurar los inventarios deacuerdo a la búsqueda
             while(inventarioSQL.next()){
                 leido = new ProductoInventario();
                 leido.setIdProducto(inventarioSQL.getInt(1));
@@ -70,8 +96,10 @@ public class InventarioDAO {
             }
             prepStmt.close();
         }catch(SQLException e){
+            //Mensaje de error
             ex.setMensaje(e.getLocalizedMessage());
         }finally{
+            //Liberar la conexión
             ServiceLocator.getInstance().liberarConexion();
         }
         return leido;

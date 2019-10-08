@@ -52,14 +52,14 @@ public class registroRepVentas extends HttpServlet {
         repI.setTelefono(new BigDecimal(request.getParameter("TEL")));
         repI.setFechaNacimiento(request.getParameter("D_FECHA_NACIMIENTO"));
         repI.setDireccion(request.getParameter("A_DIRECCION"));
-        if(rep!=null){
+        if(rep.getIdRep()!=null){
             repI.setCodigoPostal(rep.getCodigoPostal());
             repI.setCaptadorId(rep.getIdRep());
             repI.setCaptadorTipo(Character.toString(rep.getTipoId()));
             repI.setClasificacion(1);
         }
         Mensaje ex = repD.incluirRepresentante(repI);
-        System.out.println("holissssssssssss");
+        
         if(ex.getMensaje()==null){
             request.getSession().setAttribute("rep", rep);
             response.sendRedirect("/Multinivel/formulario_Nuevo_Rep.html");

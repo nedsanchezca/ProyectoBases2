@@ -12,28 +12,31 @@ import java.math.BigDecimal;
  * @author thrash
  */
 public class Representante {
-    private String idRep;
+    private String idRep = null;
     private char tipoId;
-    private String nombre;
-    private String apellido;
-    private String direccion;
-    private String ciudad;
-    private String correo;
-    private BigDecimal telefono;
-    private String genero;
-    private String fechaContrato;
-    private String fechaNacimiento;
+    private String nombre = null;
+    private String apellido = null;
+    private String direccion = null;
+    private String ciudad = null;
+    private String correo = null;
+    private BigDecimal telefono = null;
+    private String genero = null;
+    private String fechaContrato = null;
+    private String fechaNacimiento = null;
     private int clasificacion;
-    private String captadorId;
-    private String captadorTipo;
+    private String captadorId = null;
+    private String captadorTipo = null;
     private String codigoPostal=null;
-    private String pass;
+    private String pass = null;
 
     public String getIdRep() {
         return idRep;
     }
 
     public void setIdRep(String idRep) {
+        if(idRep!=null){
+            idRep = idRep.equals("")?null:idRep;
+        }
         this.idRep = idRep;
     }
 

@@ -16,7 +16,6 @@ import javax.servlet.http.HttpServletResponse;
 import negocio.Cliente;
 import negocio.DetallePedido;
 import negocio.Pedido;
-import negocio.Representante;
 import util.Mensaje;
 
 /**
@@ -37,7 +36,8 @@ public class registroPedidoC extends HttpServlet {
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
-        Cliente cliente = (Cliente)request.getSession().getAttribute("cli");;
+        
+        Cliente cliente = (Cliente)request.getSession().getAttribute("cli");
         Mensaje ex = new Mensaje();
         ArrayList<DetallePedido> detalles = (ArrayList<DetallePedido>)request.getSession().getAttribute("det");
         Pedido pedido = new Pedido();

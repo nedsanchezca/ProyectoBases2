@@ -1,7 +1,17 @@
+create view P_USR as select * from (select a.GRANTEE,r.ROLE,r.PRIVILEGE,r.TABLE_NAME from dba_role_privs a, role_tab_privs r where a.GRANTED_ROLE=r.ROLE union all select a.GRANTEE,r.ROLE, r.PRIVILEGE,null as TABLE_NAME from dba_role_privs a, role_sys_privs r where a.GRANTED_ROLE=r.ROLE);
+
+create view P_ROL as select * from (select role,privilege,table_name from role_tab_privs union all select role,privilege,null as table_name from role_sys_privs);
+
+CREATE PUBLIC SYNONYM P_USR FOR P_USR;
+CREATE PUBLIC SYNONYM P_ROL FOR P_ROL;
+
+grant select on P_ROL to r_adminAP;
+grant select on P_USR to r_adminAP;
+
 -- Estando conectados a AdminDB
 -- Inicio Creación de Roles y asignación de privilegios a dichos roles
 CREATE ROLE r_adminAP;
-GRANT CONNECT TO r_adminAP;
+GRANT CREATE SESSION TO r_adminAP;
 GRANT CREATE USER TO r_adminAP;
 GRANT CREATE VIEW TO  r_adminAP;
 GRANT CREATE PUBLIC SYNONYM TO r_adminAP;
@@ -27,7 +37,7 @@ CREATE PUBLIC SYNONYM categoria FOR natame.categoria;
 CREATE PUBLIC SYNONYM v_producto FOR natame.v_producto;
 
 CREATE ROLE r_RepVentasMaster;
-GRANT CONNECT TO r_RepVentasMaster;
+GRANT CREATE SESSION TO r_RepVentasMaster;
 GRANT SELECT ON region TO r_RepVentasMaster;
 GRANT SELECT ON clasificacion TO r_RepVentasMaster;
 GRANT SELECT ON categoria TO r_RepVentasMaster;
@@ -44,7 +54,7 @@ GRANT SELECT ON pedido_seq TO r_RepVentasMaster;
 GRANT SELECT ON v_producto TO r_RepVentasMaster;
 
 CREATE ROLE r_RepVentas;
-GRANT CONNECT TO r_RepVentas;
+GRANT CREATE SESSION TO r_RepVentas;
 GRANT SELECT ON region TO r_RepVentas;
 GRANT SELECT ON clasificacion TO r_RepVentas;
 GRANT SELECT ON categoria TO r_RepVentas;
@@ -61,7 +71,7 @@ GRANT SELECT ON pedido_seq TO r_RepVentas;
 GRANT SELECT ON v_producto TO r_RepVentas;
 
 CREATE ROLE r_cliente;
-GRANT CONNECT TO r_cliente;
+GRANT CREATE SESSION TO r_cliente;
 GRANT SELECT,INSERT,UPDATE ON pedido TO r_cliente;
 GRANT SELECT,INSERT,DELETE ON detalle_pedido TO r_cliente;
 GRANT SELECT ON region TO r_cliente;
@@ -77,6 +87,7 @@ GRANT SELECT ON pedido_seq TO r_cliente;
 GRANT SELECT ON v_producto TO r_cliente;
 
 CREATE ROLE r_visitante;
+GRANT CREATE SESSION TO r_visitante;
 GRANT SELECT ON region TO r_visitante;
 GRANT SELECT ON categoria TO r_visitante; 
 GRANT SELECT ON subcategoria TO r_visitante; 

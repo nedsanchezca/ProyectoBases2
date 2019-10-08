@@ -85,17 +85,14 @@
                     ClienteDAO dao1 = new ClienteDAO((String) request.getSession().getAttribute("usr"), (String) request.getSession().getAttribute("pass"));
                     ArrayList<Cliente> clientes = new ArrayList<Cliente>();
                     ArrayList<Pedido> pedidos = new ArrayList<Pedido>();
-                    System.out.println("Pasé las declaraciones");
-                    if (rep != null) {
+                    if (rep.getIdRep() != null) {
                         clientes = dao1.obtenerClientes(rep, new Mensaje());
                     }
-                    System.out.println("Pasé la obtención de los clientes de un rep");
-                    if (cli != null) {
+                    if (cli.getIdCliente() != null) {
                         clientes.add(cli);
                     }
                     for (Cliente c : clientes) {
                         pedidos.addAll(dao.obtenerPedidos(c, "N", new Mensaje()));
-                        System.out.println("Llegué al for de los pedidos");
                     }
                     int i = 0;
                     for (Pedido ped : pedidos) {

@@ -70,13 +70,13 @@
                               Clasificacion cla = (Clasificacion)request.getSession().getAttribute("cla");
                               String nombre="";
                               String clasificacion="";
-                              if(rep!=null&&cli!=null){
+                              if(rep.getIdRep()!=null&&cli.getIdCliente()!=null){
                                   nombre = rep.getNombre();
                                   clasificacion = "Rep:"+cla.getNombre()+" & Cliente";
-                              }else if(rep!=null){
+                              }else if(rep.getIdRep()!=null){
                                   nombre = rep.getNombre();
                                   clasificacion = "Rep:"+cla.getNombre();
-                              }else if(cli!=null){
+                              }else if(cli.getIdCliente()!=null){
                                   nombre = cli.getNombre();
                                   clasificacion = "Cliente";
                               }
