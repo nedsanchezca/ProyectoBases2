@@ -18,17 +18,10 @@ import util.ServiceLocator;
  * @author thrash
  */
 public class ClasificacionDAO {
-    private String usr;
-    private String pass;
+    private ServiceLocator locator;
     
-    /**
-     * 
-     * @param usr Usuario que requiere conexión
-     * @param pass Contraseña de usuario que requiere conexión
-     */
-    public ClasificacionDAO(String usr, String pass){
-        this.usr = usr;
-        this.pass = pass;
+    public ClasificacionDAO(){
+        
     }
     
     /**
@@ -41,8 +34,7 @@ public class ClasificacionDAO {
         Clasificacion clasificacion = new Clasificacion();
         try{
             //Conexión con el usuario actual
-            Connection conexion = ServiceLocator.getInstance().tomarConexion(usr,pass,ex);
-            
+            Connection conexion = locator.getConexion();
             //Ejecución de la sentencia SQL
             String strSQL = "select N_NOMBRE,V_COMISION from clasificacion where K_ID=?";
             PreparedStatement prepStmt = conexion.prepareStatement(strSQL);
@@ -55,17 +47,19 @@ public class ClasificacionDAO {
                 clasificacion.setComision(resultado.getDouble(2));
             }
             prepStmt.close();
-            
         }catch(SQLException e){
             //Si hay un error, se configura el mensaje y se retorna nulo
             ex.setMensaje(e.getLocalizedMessage());
             return null;
         }finally{
-            //Siempre se debe liberar la conexión, haya o no un error
-            ServiceLocator.getInstance().liberarConexion();
+            this.locator=null;
         }
         
         //Si no hay errores, se retorna la clasificación
         return clasificacion;
+    }
+    
+    public void setLocator(ServiceLocator locator){
+        this.locator = locator;
     }
 }

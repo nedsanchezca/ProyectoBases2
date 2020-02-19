@@ -22,8 +22,7 @@ public class AutenticacionDAO {
     public Mensaje autenticar(String usr,String pass){
         Mensaje ex = new Mensaje();
         //Toma y libera la conexión para verificar un usuario válido
-        ServiceLocator.getInstance().tomarConexion(usr,pass,ex);
-        ServiceLocator.getInstance().liberarConexion();
+        ServiceLocator service = new ServiceLocator(usr,pass,ex);
         return ex;
     }
 }

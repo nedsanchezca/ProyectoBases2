@@ -17,6 +17,7 @@ import negocio.Cliente;
 import negocio.DetallePedido;
 import negocio.Pedido;
 import util.Mensaje;
+import util.ServiceLocator;
 
 /**
  *
@@ -39,7 +40,8 @@ public class cancelacionPedido extends HttpServlet {
         Mensaje ex = new Mensaje();
         ArrayList<Pedido> pedidos = (ArrayList<Pedido>)request.getSession().getAttribute("arrPed");
         
-        PedidoDAO dao = new PedidoDAO((String)request.getSession().getAttribute("usr"),(String)request.getSession().getAttribute("pass"));
+        PedidoDAO dao = new PedidoDAO();
+        dao.setLocator((ServiceLocator)request.getSession().getAttribute("conexion"));
         dao.cancelarPedido(pedidos.get(Integer.parseInt(request.getParameter("can"))),new Mensaje());
         request.getSession().setAttribute("det", null);
         request.getSession().setAttribute("pro", null);

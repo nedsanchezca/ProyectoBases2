@@ -21,18 +21,12 @@ import util.Mensaje;
  * @author thrash
  */
 public class ClienteDAO {
+
+    private ServiceLocator locator;
     
-    String usr;
-    String pass;
-    
-    /**
-     * 
-     * @param usr usuario que requiere autenticación
-     * @param pass contraseña del usuario que requiere autenticación
-     */
-    public ClienteDAO(String usr, String pass){
-        this.usr = usr;
-        this.pass = pass;
+
+    public ClienteDAO(){
+
     }
     
     
@@ -44,7 +38,7 @@ public class ClienteDAO {
     public void incluirCliente(Cliente cliente,Mensaje ex){
       try {
         //Toma la conexión con el usuario actual
-        Connection conexion = ServiceLocator.getInstance().tomarConexion(usr,pass,ex);
+        Connection conexion = locator.getConexion();
         
         //Ejecución de la sentencia SQL
         String strSQL = "INSERT INTO persona VALUES(?,?,?,?,?,?)";
@@ -78,14 +72,13 @@ public class ClienteDAO {
         prepStmt.executeUpdate();
         prepStmt.close();
         
-        //Commit para guardar todos los cambios.
-        ServiceLocator.getInstance().commit();
+        locator.commit();
       } catch (SQLException e) {
           //Si hay un error, se actualiza el mensaje de error
           ex.setMensaje(e.getLocalizedMessage());
       }  finally {
           //Siempre se libera la conexión
-         ServiceLocator.getInstance().liberarConexion();
+         this.locator = null;
       }
     }
     
@@ -106,7 +99,7 @@ public class ClienteDAO {
       try{
           
             //Toma la conexión para el usuario actual
-            Connection conexion = ServiceLocator.getInstance().tomarConexion(usr,pass,ex);
+            Connection conexion = locator.getConexion();
             
             //Ejecución de la sentencia SQL de persona
             String strSQL = "select * from persona where K_TIPO_ID=? and K_NUMERO_ID=?";
@@ -146,7 +139,7 @@ public class ClienteDAO {
             return null;
         }finally{
             //Se libera la conexión siempre
-            ServiceLocator.getInstance().liberarConexion();
+            this.locator = null;
         }
         
         //Una consulta vacía no genera error, pero debe manejarse
@@ -168,7 +161,7 @@ public class ClienteDAO {
       ArrayList<Cliente> clientes = new ArrayList<Cliente>();
       try{
             //Tomar la conexión
-            Connection conexion = ServiceLocator.getInstance().tomarConexion(usr,pass,ex);
+            Connection conexion = locator.getConexion();
             
             //Ejecución de la sentencia SQL
             String strSQL = "select p.N_NOMBRE, p.N_APELLIDO, p.A_DIRECCION, p.C_CIUDAD, c.* from persona p, cliente c "
@@ -200,8 +193,12 @@ public class ClienteDAO {
             ex.setMensaje(e.getLocalizedMessage());
         }finally{
             //Se libera siempre la conexión
-            ServiceLocator.getInstance().liberarConexion();
+            this.locator = null;
         }
         return clientes;
+    }
+    
+    public void setLocator(ServiceLocator locator){
+        this.locator=locator;
     }
 }

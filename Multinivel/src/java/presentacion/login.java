@@ -19,6 +19,7 @@ import negocio.Clasificacion;
 import negocio.Cliente;
 import negocio.Representante;
 import util.Mensaje;
+import util.ServiceLocator;
 
 /**
  *
@@ -51,9 +52,13 @@ public class login extends HttpServlet {
 
         if(ex.getMensaje()==null){
             //Obtener datos del usuario autenticado
-            RepresentanteDAO repD = new RepresentanteDAO(usr,pass);
-            ClienteDAO cliD = new ClienteDAO(usr,pass);
-            ClasificacionDAO claD = new ClasificacionDAO(usr,pass);
+            ServiceLocator locator = new ServiceLocator(usr,pass,ex);
+            RepresentanteDAO repD = new RepresentanteDAO();
+            repD.setLocator(locator);
+            ClienteDAO cliD = new ClienteDAO();
+            cliD.setLocator(locator);
+            ClasificacionDAO claD = new ClasificacionDAO();
+            claD.setLocator(locator);
             Clasificacion cla = null;
             
             Representante rep = repD.obtenerRepresentante(usr.substring(0, 1), usr.substring(1),ex);
@@ -74,6 +79,7 @@ public class login extends HttpServlet {
             request.getSession().setAttribute("usr", usr);
             request.getSession().setAttribute("pass", pass);
             request.getSession().setAttribute("cla", cla);
+            request.getSession().setAttribute("conexion", locator);
             response.sendRedirect("/Multinivel/pagina_Lobby.jsp");
         }else{
             try (PrintWriter out = response.getWriter()) {

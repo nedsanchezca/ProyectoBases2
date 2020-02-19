@@ -22,12 +22,10 @@ import util.Mensaje;
  * @author thrash
  */
 public class PedidoDAO {
-    private String usr;
-    private String pass;
+    private ServiceLocator locator;
     
-    public PedidoDAO(String usr,String pass){
-        this.usr = usr;
-        this.pass = pass;
+    public PedidoDAO(){
+        
     }
     
     /**
@@ -38,7 +36,7 @@ public class PedidoDAO {
     public void registrarPedido(Pedido nuevo,Mensaje ex){
       try {
         //Tomar la conexión
-        Connection conexion = ServiceLocator.getInstance().tomarConexion(usr,pass,ex);
+        Connection conexion = locator.getConexion();
         
         //Ejecución de la sentencia SQL de inserción del pedido
         String strSQL = "INSERT INTO pedido VALUES(natame.pedido_seq.nextval,'N',sysdate,?,?)";
@@ -72,15 +70,15 @@ public class PedidoDAO {
         }
         
         prepStmt.close();
-        ServiceLocator.getInstance().commit();
+        locator.commit();
         ex = null;
       } catch (SQLException e) {
         //Mensaje de error
-        ServiceLocator.getInstance().rollback();
+        locator.rollback();
         ex.setMensaje(e.getLocalizedMessage());
       }  finally {
         //Liberar la conexión
-        ServiceLocator.getInstance().liberarConexion();
+        locator=null;
       }
     }
     
@@ -92,7 +90,7 @@ public class PedidoDAO {
     public void cancelarPedido(Pedido pedido, Mensaje ex){
       try {
         //Tomar la conexión
-        Connection conexion = ServiceLocator.getInstance().tomarConexion(usr,pass,ex);
+        Connection conexion = locator.getConexion();
         //Actualizar el estado del pedido
         String strSQL = "UPDATE pedido SET I_ESTADO=\'C\' WHERE K_N_FACTURA=?";
         PreparedStatement prepStmt = conexion.prepareStatement(strSQL);
@@ -113,14 +111,14 @@ public class PedidoDAO {
         }
         
         prepStmt.close();
-        ServiceLocator.getInstance().commit();
+        locator.commit();
       } catch (SQLException e) {
          //Manejo de error
-        ServiceLocator.getInstance().rollback();
+        locator.rollback();
           System.out.println(e);
       }  finally {
         //Liberar conexión
-        ServiceLocator.getInstance().liberarConexion();
+        locator = null;
       }
     }
     
@@ -133,7 +131,7 @@ public class PedidoDAO {
       try {
 
         //Tomar conexión
-        Connection conexion = ServiceLocator.getInstance().tomarConexion(usr,pass,ex);
+        Connection conexion = locator.getConexion();
         PreparedStatement prepStmt = null;
         
         //Sentencias SQL empleadas
@@ -176,14 +174,14 @@ public class PedidoDAO {
         }
         
         prepStmt.close();
-        ServiceLocator.getInstance().commit();
+        locator.commit();
       } catch (SQLException e) {
           //Manejo del error
-        ServiceLocator.getInstance().rollback();
+        locator.rollback();
         //JOptionPane.showMessageDialog(null, e);
       }  finally {
           //Liberar la conexión
-        ServiceLocator.getInstance().liberarConexion();
+        locator = null;
       }
     }
     
@@ -198,7 +196,7 @@ public class PedidoDAO {
         ArrayList<Pedido> pedidos = new ArrayList<Pedido>();
         try{
             String strSQL = "SELECT * FROM pedido WHERE F_NUMERO_ID=? AND F_TIPO_ID=? AND I_ESTADO = ?";
-            Connection conexion = ServiceLocator.getInstance().tomarConexion(usr,pass,ex);
+            Connection conexion = locator.getConexion();
             PreparedStatement prepStmt = conexion.prepareStatement(strSQL);
             prepStmt.setString(1,cliente.getIdCliente());
             prepStmt.setString(2,Character.toString(cliente.getTipoId()));
@@ -230,8 +228,12 @@ public class PedidoDAO {
         }catch(SQLException e){
             System.out.println(e);
         }finally{
-            ServiceLocator.getInstance().liberarConexion();
+            this.locator = null;
         }
         return pedidos;
+    }
+    
+    public void setLocator(ServiceLocator locator){
+        this.locator = locator;
     }
 }

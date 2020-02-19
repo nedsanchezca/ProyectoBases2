@@ -16,6 +16,7 @@ import javax.servlet.http.HttpServletResponse;
 import negocio.DetallePedido;
 import negocio.Pedido;
 import util.Mensaje;
+import util.ServiceLocator;
 
 /**
  *
@@ -40,7 +41,8 @@ public class modificacionPedido extends HttpServlet {
         ArrayList<DetallePedido> detalles = (ArrayList<DetallePedido>)request.getSession().getAttribute("det");
         Pedido pedido = (Pedido)request.getSession().getAttribute("pedidoMod");
         pedido.setItems(detalles);
-        PedidoDAO dao = new PedidoDAO((String)request.getSession().getAttribute("usr"),(String)request.getSession().getAttribute("pass"));
+        PedidoDAO dao = new PedidoDAO();
+        dao.setLocator((ServiceLocator)request.getSession().getAttribute("conexion"));
         dao.modificarPedido(pedido,ex);
         if(ex.getMensaje()==null){
             request.getSession().setAttribute("det", null);

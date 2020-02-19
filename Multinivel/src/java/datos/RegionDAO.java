@@ -20,11 +20,12 @@ import util.ServiceLocator;
  * @author thrash
  */
 public class RegionDAO {
+    private ServiceLocator locator;
     public ArrayList<Region> obtenerInventario(){
         ArrayList<Region> regiones = new ArrayList<Region>();
         try{
             String strSQL = "select * from region";
-            Connection conexion = ServiceLocator.getInstance().tomarConexion(new String(),new String(),new Mensaje());
+            Connection conexion = locator.getConexion();
             PreparedStatement prepStmt = conexion.prepareStatement(strSQL);
             ResultSet resultado = prepStmt.executeQuery();
             while(resultado.next()){
@@ -37,8 +38,12 @@ public class RegionDAO {
             
         }catch(SQLException e){
         }finally{
-            ServiceLocator.getInstance().liberarConexion();
+            this.locator=null;
         }
         return regiones;
+    }
+    
+    public void setLocator(ServiceLocator locator){
+        this.locator=locator;
     }
 }

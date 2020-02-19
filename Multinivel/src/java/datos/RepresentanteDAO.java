@@ -19,27 +19,22 @@ import util.ServiceLocator;
  */
 public class RepresentanteDAO {
 
-    String usr;
-    String pass;
-
-    public RepresentanteDAO(String usr, String pass) {
-        this.usr = usr;
-        this.pass = pass;
+    ServiceLocator locator;
+            
+    public RepresentanteDAO() {
     }
 
     public Mensaje incluirRepresentante(Representante representante) {
-        System.out.println("Acabé de entrar");
         Mensaje mensaje = new Mensaje();
-        Connection conexion = ServiceLocator.getInstance().tomarConexion(usr, pass, mensaje);
+        Connection conexion = locator.getConexion();
         try {
-            System.out.println("Acabé de entrar al try");
             String strSQL = "INSERT INTO persona VALUES(?,?,?,?,?,?)";
             PreparedStatement prepStmt = conexion.prepareStatement("select count(*) from persona where K_NUMERO_ID=? and K_TIPO_ID=?");
             prepStmt.setString(1, representante.getIdRep());
             prepStmt.setString(2, Character.toString(representante.getTipoId()));
             ResultSet resultado = prepStmt.executeQuery();
             resultado.next();
-            System.out.println("Superé la persona yeih111");
+            
             if (resultado.getInt(1) == 0) {
                 prepStmt = conexion.prepareStatement(strSQL);
                 prepStmt.setString(1, representante.getIdRep());
@@ -51,7 +46,7 @@ public class RepresentanteDAO {
                 prepStmt.executeUpdate();
             }
             System.out.println("Superé la persona yeih");
-            strSQL = "INSERT INTO rep_ventas VALUES(?,?,?,?,?,sysdate,?,?,?,?,?)";
+            strSQL = "INSERT INTO rep_ventas VALUES(?,?,?,?,?,sysdate,?,?,?,?)";
             prepStmt = conexion.prepareStatement(strSQL);
             prepStmt.setString(1, representante.getIdRep());
             prepStmt.setString(2, Character.toString(representante.getTipoId()));
@@ -61,17 +56,18 @@ public class RepresentanteDAO {
             System.out.println("Antes de la fecha");
             prepStmt.setDate(6, java.sql.Date.valueOf(representante.getFechaNacimiento()));
             System.out.println("Después de la fecha");
-            prepStmt.setInt(7, representante.getClasificacion());
-            prepStmt.setString(8, representante.getCaptadorId());
-            prepStmt.setString(9, representante.getCaptadorTipo());
-            prepStmt.setString(10, representante.getCodigoPostal());
+            prepStmt.setString(7, representante.getCaptadorId());
+            prepStmt.setString(8, representante.getCaptadorTipo());
+            prepStmt.setString(9, representante.getCodigoPostal());
             prepStmt.executeUpdate();
-
+            
+            strSQL = "INSERT INTO HISTORICO_CLASIFICACION VALUES(natame.pedido_seq.nextval,SYSDATE,SYSDATE + numtoyminterval(1, 'MONTH')-1,?,?,1)";
+            prepStmt = conexion.prepareStatement(strSQL);
+            prepStmt.setString(1, representante.getIdRep());
+            prepStmt.setString(2, Character.toString(representante.getTipoId()));
+            prepStmt.executeUpdate();
             System.out.println("Pase primera parte");
             
-            ServiceLocator.getInstance().commit();
-            ServiceLocator.getInstance().liberarConexion();
-            conexion = ServiceLocator.getInstance().tomarConexion("natame", "natame", mensaje);
             strSQL = "CREATE USER " + representante.getTipoId() + representante.getIdRep() + " IDENTIFIED BY " + representante.getIdRep();
             prepStmt = conexion.prepareStatement(strSQL);
             prepStmt.execute();
@@ -79,15 +75,14 @@ public class RepresentanteDAO {
             prepStmt = conexion.prepareStatement(strSQL);
             prepStmt.execute();
             prepStmt.close();
+            locator.commit();
             mensaje.setMensaje(null);
-            System.out.println("Lleguéeeeeee");
         } catch (Exception e) {
-            ServiceLocator.getInstance().rollback();
+            locator.rollback();
             mensaje.setMensaje(e.getLocalizedMessage());
             System.out.println(e);
         } finally {
-            ServiceLocator.getInstance().liberarConexion();
-            System.out.println("desde el finally");
+            locator = null;
             return mensaje;
         }
 
@@ -100,7 +95,7 @@ public class RepresentanteDAO {
         rep.setIdRep(numeroId);
         try {
             String strSQL = "select * from persona where K_TIPO_ID=? and K_NUMERO_ID=?";
-            Connection conexion = ServiceLocator.getInstance().tomarConexion(usr,pass,m);
+            Connection conexion = locator.getConexion();
             PreparedStatement prepStmt = conexion.prepareStatement(strSQL);
             prepStmt.setString(1, tipoId);
             prepStmt.setString(2, numeroId);
@@ -125,14 +120,22 @@ public class RepresentanteDAO {
                 rep.setGenero(resultado.getString(5));
                 rep.setFechaContrato(resultado.getDate(6).toString());
                 rep.setFechaNacimiento(resultado.getDate(7).toString());
-                rep.setClasificacion(resultado.getInt(8));
                 System.out.println(rep.getClasificacion());
-                rep.setCaptadorId(resultado.getString(9));
-                rep.setCaptadorTipo(resultado.getString(10));
-                rep.setCodigoPostal(resultado.getString(11));
+                rep.setCaptadorId(resultado.getString(8));
+                rep.setCaptadorTipo(resultado.getString(9));
+                rep.setCodigoPostal(resultado.getString(10));
                 contador++;
             }
-            ServiceLocator.getInstance().restaurarConexion();
+            strSQL = "select c.k_id from clasificacion c,historico_clasificacion hc "
+                    + "where c.k_id=hc.f_id_clasificacion and hc.f_num_id=? "
+                    + "and hc.f_tipo_id=? and hc.d_fecha_inicial<=SYSDATE and hc.d_fecha_final>=sysdate";
+            prepStmt = conexion.prepareStatement(strSQL);
+            prepStmt.setString(1, numeroId);
+            prepStmt.setString(2, tipoId);
+            resultado = prepStmt.executeQuery();
+            if (resultado.next()) {
+                rep.setClasificacion(resultado.getInt(1));
+            }
             prepStmt.close();
             m.setMensaje(null);
         } catch (SQLException e) {
@@ -140,11 +143,15 @@ public class RepresentanteDAO {
             m.setMensaje(e.getLocalizedMessage());
             return null;
         } finally {
-            ServiceLocator.getInstance().liberarConexion();
+            locator = null;
         }
         if(contador == 0){
             rep=null;
         }
         return rep;
+    }
+    
+    public void setLocator(ServiceLocator locator){
+        this.locator = locator;
     }
 }

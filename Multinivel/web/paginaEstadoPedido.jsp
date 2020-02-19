@@ -9,6 +9,7 @@
 <%@page import="negocio.Cliente"%>
 <%@page import="datos.ClienteDAO"%>
 <%@page import="util.Mensaje"%>
+<%@page import="util.ServiceLocator"%>
 <%@page import="negocio.ProductoInventario"%>
 <%@page import="datos.InventarioDAO"%>
 <%@page import="negocio.Representante"%>
@@ -81,8 +82,10 @@
                 <%
                     Representante rep = (Representante) request.getSession().getAttribute("rep");
                     Cliente cli = (Cliente) request.getSession().getAttribute("cli");
-                    PedidoDAO dao = new PedidoDAO((String) request.getSession().getAttribute("usr"), (String) request.getSession().getAttribute("pass"));
-                    ClienteDAO dao1 = new ClienteDAO((String) request.getSession().getAttribute("usr"), (String) request.getSession().getAttribute("pass"));
+                    PedidoDAO dao = new PedidoDAO();
+                    dao.setLocator((ServiceLocator)request.getSession().getAttribute("conexion"));
+                    ClienteDAO dao1 = new ClienteDAO();
+                    dao1.setLocator((ServiceLocator)request.getSession().getAttribute("conexion"));
                     ArrayList<Cliente> clientes = new ArrayList<Cliente>();
                     ArrayList<Pedido> pedidos = new ArrayList<Pedido>();
                     if (rep.getIdRep() != null) {
@@ -92,6 +95,7 @@
                         clientes.add(cli);
                     }
                     for (Cliente c : clientes) {
+                        dao.setLocator((ServiceLocator)request.getSession().getAttribute("conexion"));
                         pedidos.addAll(dao.obtenerPedidos(c, "N", new Mensaje()));
                     }
                     int i = 0;

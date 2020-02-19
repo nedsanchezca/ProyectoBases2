@@ -19,12 +19,9 @@ import util.ServiceLocator;
  * @author thrash
  */
 public class InventarioDAO {
-    String usr;
-    String pass;
+    ServiceLocator locator;
     
-    public InventarioDAO(String usr, String pass){
-        this.usr = usr;
-        this.pass = pass;
+    public InventarioDAO(){
     }
     
     /**
@@ -37,7 +34,7 @@ public class InventarioDAO {
         ArrayList<ProductoInventario> inventario = new ArrayList<ProductoInventario>();
         try{
             //Tomar la conexión para el usuario actual
-            Connection conexion = ServiceLocator.getInstance().tomarConexion(usr,pass,ex);
+            Connection conexion = locator.getConexion();
             
             //Ejecución de la sentencia SQL
             String strSQL = "select p.K_CODIGO_PRODUCTO,p.N_NOMBRE_PRODUCTO "
@@ -63,7 +60,7 @@ public class InventarioDAO {
             ex.setMensaje(e.getLocalizedMessage());
         }finally{
             //Siempre se libera la conexión
-            ServiceLocator.getInstance().liberarConexion();
+            locator=null;
         }
         return inventario;
     }
@@ -78,10 +75,12 @@ public class InventarioDAO {
         ProductoInventario leido = null;
         try{
             //Tomar conexión para el usuario actual
-            Connection conexion = ServiceLocator.getInstance().tomarConexion(usr,pass,ex);
+            Connection conexion = locator.getConexion();
             
             //Ejecución de la sentencia SQL
-            String strSQL = "select * from v_producto where K_ID=?";
+            String strSQL = "select i.K_ID, i.V_PRECIO, p.N_NOMBRE_PRODUCTO, c.V_IVA "
+                    + "from inventario i, producto p, categoria c "
+                    + "where  i.F_CODIGO_PRODUCTO=p.K_CODIGO_PRODUCTO and p.F_ID=c.K_ID and i.K_ID=?";
             PreparedStatement prepStmt = conexion.prepareStatement(strSQL);
             prepStmt.setInt(1,idProd);
             ResultSet inventarioSQL = prepStmt.executeQuery();
@@ -92,7 +91,7 @@ public class InventarioDAO {
                 leido.setIdProducto(inventarioSQL.getInt(1));
                 leido.setPrecio(inventarioSQL.getDouble(2));
                 leido.setNombreProducto(inventarioSQL.getString(3));
-                leido.setIva(inventarioSQL.getDouble(5));
+                leido.setIva(inventarioSQL.getDouble(4));
             }
             prepStmt.close();
         }catch(SQLException e){
@@ -100,8 +99,12 @@ public class InventarioDAO {
             ex.setMensaje(e.getLocalizedMessage());
         }finally{
             //Liberar la conexión
-            ServiceLocator.getInstance().liberarConexion();
+            locator = null;
         }
         return leido;
+    }
+    
+    public void setLocator(ServiceLocator locator){
+        this.locator = locator;
     }
 }

@@ -15,6 +15,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import negocio.Representante;
 import util.Mensaje;
+import util.ServiceLocator;
 
 /**
  *
@@ -38,8 +39,8 @@ public class registroRepVentas extends HttpServlet {
         
         //Rep ventas logueado
         Representante rep = (Representante)request.getSession().getAttribute("rep");
-        RepresentanteDAO repD = new RepresentanteDAO((String)request.getSession().getAttribute("usr"),(String)request.getSession().getAttribute("pass"));
-        
+        RepresentanteDAO repD = new RepresentanteDAO();
+        repD.setLocator((ServiceLocator)request.getSession().getAttribute("conexion"));
         //Obtener valores del formulario
         Representante repI = new Representante();
         repI.setTipoId(request.getParameter("K_TIPO_ID").charAt(0));

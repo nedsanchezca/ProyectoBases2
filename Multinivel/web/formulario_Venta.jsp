@@ -8,6 +8,7 @@
 <%@page import="negocio.Cliente"%>
 <%@page import="datos.ClienteDAO"%>
 <%@page import="util.Mensaje"%>
+<%@page import="util.ServiceLocator"%>
 <%@page import="negocio.ProductoInventario"%>
 <%@page import="datos.InventarioDAO"%>
 <%@page import="negocio.Representante"%>
@@ -114,7 +115,8 @@
                         mod = pedidos.get(Integer.parseInt(request.getParameter("mod")));
                         request.getSession().setAttribute("pedidoMod", mod);
                     }
-                    InventarioDAO inv = new InventarioDAO((String)request.getSession().getAttribute("usr"),(String)request.getSession().getAttribute("pass"));
+                    InventarioDAO inv = new InventarioDAO();
+                    inv.setLocator((ServiceLocator)request.getSession().getAttribute("conexion"));
                     ArrayList<DetallePedido> arr = (ArrayList<DetallePedido>) request.getSession().getAttribute("det");
                     ArrayList<ProductoInventario> prod = (ArrayList<ProductoInventario>) request.getSession().getAttribute("pro");
                     if (arr == null) {
@@ -137,6 +139,7 @@
                     try {
                         cantidad = Integer.parseInt(request.getParameter("cantidad"));
                         codigo = Integer.parseInt(request.getParameter("codigo"));
+                        inv.setLocator((ServiceLocator)request.getSession().getAttribute("conexion"));
                         producto = inv.obtenerProducto(codigo, ex);
                     } catch (Exception e) {
 
@@ -179,7 +182,8 @@
     <div class="form-group">
             <%;
             if(!modificar){
-                ClienteDAO dao1 = new ClienteDAO((String)request.getSession().getAttribute("usr"),(String)request.getSession().getAttribute("pass"));
+                ClienteDAO dao1 = new ClienteDAO();
+                dao1.setLocator((ServiceLocator)request.getSession().getAttribute("conexion"));
                 ArrayList<Cliente> clientes = dao1.obtenerClientes(rep, new Mensaje());
                 i=0;
                 out.println("<label for=\"K_TIPO_ID\">Cliente: </label>");

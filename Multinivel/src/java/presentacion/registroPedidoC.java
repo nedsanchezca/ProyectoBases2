@@ -17,6 +17,7 @@ import negocio.Cliente;
 import negocio.DetallePedido;
 import negocio.Pedido;
 import util.Mensaje;
+import util.ServiceLocator;
 
 /**
  *
@@ -43,7 +44,8 @@ public class registroPedidoC extends HttpServlet {
         Pedido pedido = new Pedido();
         pedido.setCliente(cliente);
         pedido.setItems(detalles);
-        PedidoDAO dao = new PedidoDAO((String)request.getSession().getAttribute("usr"),(String)request.getSession().getAttribute("pass"));
+        PedidoDAO dao = new PedidoDAO();
+        dao.setLocator((ServiceLocator)request.getSession().getAttribute("conexion"));
         dao.registrarPedido(pedido, ex);
         if(ex.getMensaje()==null){
             request.getSession().setAttribute("det", null);
