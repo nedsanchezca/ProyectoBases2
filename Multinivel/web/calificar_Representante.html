@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="utf-8">
-    <title>Nuevo Cliente</title>
+    <title>Calificar Representante</title>
     <link rel="stylesheet" type="text/css" href="vendor/bootstrap/css/bootstrap.min.css">
     <link rel="stylesheet" type="text/css" href="fonts/font-awesome-4.7.0/css/font-awesome.min.css">
     <link rel="stylesheet" type="text/css" href="fonts/iconic/css/material-design-iconic-font.min.css">
@@ -16,9 +16,6 @@
     <link rel="stylesheet" type="text/css" href="css/main.css">
     <link rel="stylesheet" type="text/css" href="css/estilo.css">
 </head>
-
-
-
 
 <body>
     <nav class="navbar navbar-expand-lg">
@@ -47,51 +44,23 @@
 
     <div class="limiter">
         <section class="container">
-            <h3 class="text-uppercase text-center">Registro de nuevo cliente. </h3>
-            <p class="lead text-center">Diligencie el siguiente formulario con los datos del nuevo cliente</p>
-            <form action=registroRepVentas class="">
+            <h3 class="text-uppercase text-center">Calificación del representante de ventas. </h3>
+            <p class="lead text-center">Diligencie la siguiente información para evaluar a su representante de ventas</p>
+            <form action=calificareRepVentas class="">
                 <div class="form-group">
-                    <label for="K_NUMERO_ID">Numero de ID: </label>
-                    <input class="form-control" id="K_NUMERO_ID" name="K_NUMERO_ID" type="text" placeholder="Numero de ID">
-                </div>
-
-                <div class="form-group">
-                    <label for="K_TIPO_ID">Tipo de ID: </label>
+                    <label for="V_VALORACiÓN">Calificación </label>
                     <select class="form-control" id="K_TIPO_ID" name="K_TIPO_ID">
-                        <option value="C">Cedula de ciudadania</option>
-                        <option value="T">Tarjeta de identidad</option>
-                        <option value="P">Pasaporte extranjero</option>
+                        <option value="5">5</option>
+                        <option value="4">4</option>
+                        <option value="3">3</option>
+                        <option value="2">2</option>
+                        <option value="1">1</option>
                     </select>
                 </div>
 
                 <div class="form-group">
-                    <label for="N_NOMBRE">Nombre:</label>
-                    <input class="form-control" id="N_NOMBRE" name="N_NOMBRE" type="text" placeholder="Nombre">
-                </div>
-
-                <div class="form-group">
-                    <label for="N_APELLIDO">Apellido:</label>
-                    <input class="form-control" id="N_APELLIDO" name="N_APELLIDO" type="text" placeholder="Apellido">
-                </div>
-
-                <div class="form-group">
-                    <label for="A_DIRECCION">Direccion:</label>
-                    <input class="form-control" id="A_DIRECCION" name="A_DIRECCION" type="text" placeholder="Direccion">
-                </div>
-
-                <div class="form-group">
-                    <label for="C_CIUDAD">Ciudad:</label>
-                    <input class="form-control" id="C_CIUDAD" name="C_CIUDAD" type="text" placeholder="Ciudad">
-                </div>
-
-                <div class="form-group">
-                    <label for="E_CORREO">Correo:</label>
-                    <input class="form-control" id="E_CORREO" name="E_CORREO" type="email" placeholder="Correo">
-                </div>
-
-                <div class="form-group">
-                    <label for="T_TELEFONO">Telefono:</label>
-                    <input class="form-control" id="TEL" name="TEL" type="text" placeholder="telefono">
+                    <label for="K_NUMERO_ID"> Recomendación </label>
+                    <input class="form-control" id="N_COMENTARIO" name="N_COMENTARIO" type="text" placeholder="Comentario">
                 </div>
 
                 <button class="btn btn-primary">Registrar</button>
