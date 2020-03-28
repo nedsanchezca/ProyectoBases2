@@ -5,6 +5,7 @@
  */
 package datos;
 
+import java.sql.CallableStatement;
 import negocio.Pedido;
 import util.ServiceLocator;
 import java.sql.Connection;
@@ -12,6 +13,8 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.JOptionPane;
 import negocio.Cliente;
 import negocio.DetallePedido;
@@ -28,46 +31,67 @@ public class PedidoDAO {
         
     }
     
+    public Mensaje agregarProducto(int codInventario, int cantidad, int pedido){
+        Mensaje error = new Mensaje();
+        try {
+            //Tomar la conexión
+            Connection conexion = locator.getConexion();
+            String prStatement = "{ call PR_AGREGAR_PRODUCTO(?, ?, ?) }";
+            CallableStatement caStatement = conexion.prepareCall(prStatement);
+            caStatement.setInt(1, codInventario);
+            caStatement.setInt(2, cantidad);
+            caStatement.setInt(3, pedido);
+            caStatement.execute();
+            return error;
+        } catch (SQLException ex) {
+            System.out.println("Holaa");
+            error.setMensaje(ex.getLocalizedMessage());
+        } finally{
+            return error;
+        }
+    }
+    
+    public Mensaje borrarProducto(int codInventario, int pedido){
+        Mensaje error = new Mensaje();
+        try {
+            //Tomar la conexión
+            Connection conexion = locator.getConexion();
+            String prStatement = "{ call PR_BORRAR_PRODUCTO(?, ?) }";
+            CallableStatement caStatement = conexion.prepareCall(prStatement);
+            caStatement.setInt(1, codInventario);
+            caStatement.setInt(2, pedido);
+            caStatement.execute();
+            return error;
+        } catch (SQLException ex) {
+            error.setMensaje(ex.getLocalizedMessage());
+        } finally{
+            return error;
+        }
+    }
+    
     /**
      * Se registra un pedido basado en un objeto pedido
      * @param nuevo
      * @param ex 
      */
-    public void registrarPedido(Pedido nuevo,Mensaje ex){
+    public int registrarPedido(Cliente cliente,Mensaje ex){
+      int idl=0;
       try {
         //Tomar la conexión
         Connection conexion = locator.getConexion();
         
         //Ejecución de la sentencia SQL de inserción del pedido
-        String strSQL = "INSERT INTO pedido VALUES(natame.pedido_seq.nextval,'N',sysdate,?,?)";
-        PreparedStatement prepStmt = conexion.prepareStatement(strSQL);
-        prepStmt.setString(1, nuevo.getCliente().getIdCliente()); 
-        prepStmt.setString(2, Character.toString(nuevo.getCliente().getTipoId()));   
+        String strSQL = "SELECT natame.pedido_seq.nextval FROM DUAL";
+        PreparedStatement prepStmt = conexion.prepareStatement(strSQL);   
+        ResultSet id = prepStmt.executeQuery();
+        if(id.next())
+            idl = id.getInt(1);
+        strSQL = "INSERT INTO pedido VALUES(?,'N',sysdate,?,?)";
+        prepStmt = conexion.prepareStatement(strSQL);
+        prepStmt.setInt(1, idl);
+        prepStmt.setString(2, cliente.getIdCliente());
+        prepStmt.setString(3, Character.toString(cliente.getTipoId()));   
         prepStmt.executeUpdate();
-        
-        strSQL = "INSERT INTO detalle_pedido VALUES(?,?,natame.pedido_seq.currval,?)";
-        String strSQL2 = "UPDATE inventario SET V_DISPONIBILIDAD = ? WHERE K_ID = ?";
-        String strSQL3 = "SELECT V_DISPONIBILIDAD FROM inventario WHERE K_ID = ?";
-        
-        //Inserción de los detalles
-        for(DetallePedido detalle:nuevo.getItems()){
-            prepStmt = conexion.prepareStatement(strSQL);
-            prepStmt.setInt(1, detalle.getItem()); 
-            prepStmt.setInt(2, detalle.getCantidad());
-            prepStmt.setInt(3, detalle.getProducto());
-            prepStmt.executeUpdate();
-            
-            prepStmt = conexion.prepareStatement(strSQL3);
-            prepStmt.setInt(1, detalle.getProducto());
-            ResultSet valor = prepStmt.executeQuery();
-            valor.next();
-            int disponibilidad = valor.getInt(1);
-            
-            prepStmt = conexion.prepareStatement(strSQL2);
-            prepStmt.setInt(1, disponibilidad-detalle.getCantidad()); 
-            prepStmt.setInt(2, detalle.getProducto());
-            prepStmt.executeUpdate();
-        }
         
         prepStmt.close();
         locator.commit();
@@ -79,6 +103,7 @@ public class PedidoDAO {
       }  finally {
         //Liberar la conexión
         locator=null;
+        return idl;
       }
     }
     
@@ -231,6 +256,44 @@ public class PedidoDAO {
             this.locator = null;
         }
         return pedidos;
+    }
+    
+    public Pedido obtenerPedidos(int codigoPedido, Mensaje ex){
+        Pedido leido=null;
+        try{
+            Connection conexion = locator.getConexion();
+            String strSQL = "SELECT * FROM pedido WHERE K_N_FACTURA = ?";
+            PreparedStatement prepStmt = conexion.prepareStatement(strSQL);
+            prepStmt.setInt(1,codigoPedido);
+            ResultSet pedido = prepStmt.executeQuery();
+            strSQL = "SELECT * FROM detalle_pedido WHERE F_N_FACTURA=?";
+            
+            if(pedido.next()){
+                ArrayList<DetallePedido> detLeidos = new ArrayList<DetallePedido>();
+                leido = new Pedido();
+                leido.setIdFactura(pedido.getInt(1));
+                leido.setEstado(pedido.getString(2).charAt(0));
+                leido.setFecha(pedido.getDate(3).toString());
+                prepStmt = conexion.prepareStatement(strSQL);
+                prepStmt.setInt(1,codigoPedido);
+                ResultSet detalle = prepStmt.executeQuery();
+                while(detalle.next()){
+                    DetallePedido detLeido = new DetallePedido();
+                    detLeido.setItem(detalle.getInt(1));
+                    detLeido.setCantidad(detalle.getInt(2));
+                    detLeido.setProducto(detalle.getInt(4));
+                    detLeidos.add(detLeido);
+                }
+                leido.setItems(detLeidos);
+            }
+            prepStmt.close();
+            return leido;
+        }catch(SQLException e){
+            System.out.println(e);
+        }finally{
+            this.locator = null;
+        }
+        return leido;
     }
     
     public void setLocator(ServiceLocator locator){

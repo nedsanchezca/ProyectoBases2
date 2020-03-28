@@ -5,27 +5,21 @@
  */
 package presentacion;
 
-import datos.ClienteDAO;
 import datos.PedidoDAO;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.ArrayList;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import negocio.Cliente;
-import negocio.DetallePedido;
-import negocio.Pedido;
-import negocio.Representante;
 import util.Mensaje;
 import util.ServiceLocator;
 
 /**
  *
- * @author thrash
+ * @author Manuel Bernal
  */
-public class registroPedido extends HttpServlet {
+public class agregadoProducto extends HttpServlet {
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -38,26 +32,20 @@ public class registroPedido extends HttpServlet {
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+        
         response.setContentType("text/html;charset=UTF-8");
-
-        ArrayList<Cliente> aClientes = (ArrayList<Cliente>)request.getSession().getAttribute("aclientes");
-        Cliente cliente = new Cliente();
         
-        if(request.getParameter("cliente") != null){
-            cliente = aClientes.get(Integer.parseInt(request.getParameter("cliente")));
-        }
+        PedidoDAO objPedidoDAO = new PedidoDAO();
+        objPedidoDAO.setLocator((ServiceLocator)request.getSession().getAttribute("conexion"));
         
-        Mensaje ex = new Mensaje();
-        ArrayList<DetallePedido> detalles = (ArrayList<DetallePedido>)request.getSession().getAttribute("det");
-        Pedido pedido = new Pedido();
-        pedido.setCliente(cliente);
-        pedido.setItems(detalles);
-        PedidoDAO dao = new PedidoDAO();
-        dao.setLocator((ServiceLocator)request.getSession().getAttribute("conexion"));
-        dao.registrarPedido(pedido, ex);
+        int cantidad = Integer.parseInt(request.getParameter("cantidad"));
+        int codigo = Integer.parseInt(request.getParameter("codigo"));
+        int nPedido = (int)request.getSession().getAttribute("pedido_actual");
+        
+        Mensaje ex = objPedidoDAO.agregarProducto(codigo,cantidad,nPedido);
+        
         if(ex.getMensaje()==null){
-            request.getSession().setAttribute("det", null);
-            request.getSession().setAttribute("pro", null);
+            request.getSession().setAttribute("pedido_actual", nPedido);
             response.sendRedirect("/Multinivel/formulario_Venta.jsp");
         }else{
             try (PrintWriter out = response.getWriter()) {

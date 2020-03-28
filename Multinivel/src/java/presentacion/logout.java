@@ -37,6 +37,8 @@ public class logout extends HttpServlet {
         request.getSession().setAttribute("cli", null);
         request.getSession().setAttribute("usr", null);
         request.getSession().setAttribute("pass", null);
+        request.getSession().setAttribute("cliente_actual", null);
+        request.getSession().setAttribute("pedido_actual", null);
         response.sendRedirect("");
     }
 

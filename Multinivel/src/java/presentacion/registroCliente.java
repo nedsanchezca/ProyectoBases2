@@ -5,25 +5,25 @@
  */
 package presentacion;
 
-import datos.PedidoDAO;
+import datos.ClienteDAO;
+import datos.RepresentanteDAO;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.ArrayList;
+import java.math.BigDecimal;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import negocio.Cliente;
-import negocio.DetallePedido;
-import negocio.Pedido;
+import negocio.Representante;
 import util.Mensaje;
 import util.ServiceLocator;
 
 /**
  *
- * @author thrash
+ * @author Manuel Bernal
  */
-public class registroPedidoC extends HttpServlet {
+public class registroCliente extends HttpServlet {
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -38,22 +38,34 @@ public class registroPedidoC extends HttpServlet {
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
         
-        Cliente cliente = (Cliente)request.getSession().getAttribute("cli");
+        //Rep ventas logueado
+        Representante rep = (Representante)request.getSession().getAttribute("rep");
+        ClienteDAO cliD = new ClienteDAO();
+        cliD.setLocator((ServiceLocator)request.getSession().getAttribute("conexion"));
+        //Obtener valores del formulario
+        Cliente clienteI = new Cliente();
+        clienteI.setTipoId(request.getParameter("K_TIPO_ID").charAt(0));
+        clienteI.setIdRep(request.getParameter("K_NUMERO_ID"));
+        clienteI.setApellido(request.getParameter("N_APELLIDO"));
+        clienteI.setNombre(request.getParameter("N_NOMBRE"));
+        clienteI.setCiudad(request.getParameter("C_CIUDAD"));
+        clienteI.setDireccion(request.getParameter("A_DIRECCION"));
+        clienteI.setCorreo(request.getParameter("E_CORREO"));
+        clienteI.setTelefono(new BigDecimal(request.getParameter("TEL")));
+        
+        if(rep.getIdRep()!=null){
+            clienteI.setIdRep(rep.getIdRep());
+            clienteI.setTipoIdRep(Character.toString(rep.getTipoId()));
+        }
         Mensaje ex = new Mensaje();
-        ArrayList<DetallePedido> detalles = (ArrayList<DetallePedido>)request.getSession().getAttribute("det");
-        Pedido pedido = new Pedido();
-        pedido.setCliente(cliente);
-        pedido.setItems(detalles);
-        PedidoDAO dao = new PedidoDAO();
-        dao.setLocator((ServiceLocator)request.getSession().getAttribute("conexion"));
-        dao.registrarPedido(pedido, ex);
+        cliD.incluirCliente(clienteI, ex);
+        
         if(ex.getMensaje()==null){
-            request.getSession().setAttribute("det", null);
-            request.getSession().setAttribute("pro", null);
-            response.sendRedirect("/Multinivel/formulario_Venta.jsp");
+            request.getSession().setAttribute("rep", rep);
+            response.sendRedirect("/Multinivel/formulario_Nuevo_Rep.html");
         }else{
             try (PrintWriter out = response.getWriter()) {
-                out.println("<meta http-equiv='refresh' content='3;URL=formulario_Venta.jsp'>");
+                out.println("<meta http-equiv='refresh' content='3;URL=formulario_Nuevo_Rep.html'>");
                 out.println("<html>");
                 out.println("<head>");
                 out.println("<title>Servlet testing</title>");            

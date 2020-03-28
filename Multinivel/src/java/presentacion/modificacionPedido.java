@@ -38,31 +38,11 @@ public class modificacionPedido extends HttpServlet {
         response.setContentType("text/html;charset=UTF-8");
         
         Mensaje ex = new Mensaje();
-        ArrayList<DetallePedido> detalles = (ArrayList<DetallePedido>)request.getSession().getAttribute("det");
-        Pedido pedido = (Pedido)request.getSession().getAttribute("pedidoMod");
-        pedido.setItems(detalles);
-        PedidoDAO dao = new PedidoDAO();
-        dao.setLocator((ServiceLocator)request.getSession().getAttribute("conexion"));
-        dao.modificarPedido(pedido,ex);
-        if(ex.getMensaje()==null){
-            request.getSession().setAttribute("det", null);
-            request.getSession().setAttribute("pro", null);
-            request.getSession().setAttribute("arrPed", null);
-            request.getSession().setAttribute("modificado", false);
-            response.sendRedirect("/Multinivel/formulario_Venta.jsp");
-        }else{
-            try (PrintWriter out = response.getWriter()) {
-                out.println("<meta http-equiv='refresh' content='3;URL=formulario_Venta.jsp'>");
-                out.println("<html>");
-                out.println("<head>");
-                out.println("<title>Servlet testing</title>");            
-                out.println("</head>");
-                out.println("<body>");
-                out.println("<h1>Servlet testing at " + ex+ "</h1>");
-                out.println("</body>");
-                out.println("</html>");
-            }
-        }
+        ArrayList<Pedido> pedidos = (ArrayList<Pedido>)request.getSession().getAttribute("arrPed");
+        Pedido mod = pedidos.get(Integer.parseInt(request.getParameter("mod")));
+        request.getSession().setAttribute("cliente_actual", mod.getCliente());
+        request.getSession().setAttribute("pedido_actual",mod.getIdFactura());
+        response.sendRedirect("/Multinivel/formulario_Venta.jsp");
     }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">

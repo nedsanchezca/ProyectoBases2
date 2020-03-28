@@ -54,6 +54,7 @@ public class login extends HttpServlet {
             //Obtener datos del usuario autenticado
             ServiceLocator locator = new ServiceLocator(usr,pass,ex);
             RepresentanteDAO repD = new RepresentanteDAO();
+            
             repD.setLocator(locator);
             ClienteDAO cliD = new ClienteDAO();
             cliD.setLocator(locator);
@@ -62,10 +63,11 @@ public class login extends HttpServlet {
             Clasificacion cla = null;
             
             Representante rep = repD.obtenerRepresentante(usr.substring(0, 1), usr.substring(1),ex);
+            System.out.println(rep.getApellido());
             Cliente cli = cliD.obtenerCliente(usr.substring(0, 1), usr.substring(1),ex);
             
             if(rep!=null){
-                cla = claD.obtenerClasificacion(rep.getClasificacion(), ex);
+                cla = claD.obtenerClasificacion(rep, ex);
             }else{
                 rep = new Representante();
             }
@@ -80,6 +82,7 @@ public class login extends HttpServlet {
             request.getSession().setAttribute("pass", pass);
             request.getSession().setAttribute("cla", cla);
             request.getSession().setAttribute("conexion", locator);
+            request.getSession().setAttribute("pedido_actual", 0);
             response.sendRedirect("/Multinivel/pagina_Lobby.jsp");
         }else{
             try (PrintWriter out = response.getWriter()) {

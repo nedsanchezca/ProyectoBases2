@@ -70,6 +70,7 @@ GRANT SELECT,INSERT ON cliente TO r_RepVentas;
 GRANT SELECT ON rep_ventas TO r_RepVentas;
 GRANT SELECT,UPDATE (V_DISPONIBILIDAD) ON inventario TO r_RepVentas;
 GRANT SELECT ON pedido_seq TO r_RepVentas;
+GRANT SELECT,INSERT ON historico_clasificacion TO r_RepVentas;
 
 CREATE ROLE r_cliente;
 GRANT CREATE SESSION TO r_cliente;

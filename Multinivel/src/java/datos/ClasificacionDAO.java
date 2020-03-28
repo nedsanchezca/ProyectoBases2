@@ -10,6 +10,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import negocio.Clasificacion;
+import negocio.Representante;
 import util.Mensaje;
 import util.ServiceLocator;
 
@@ -26,23 +27,27 @@ public class ClasificacionDAO {
     
     /**
      * 
-     * @param codigo llave primaria de la clasificación
+     * @param rep representante del que se desea saber la clasificacion
      * @param ex variable auxiliar para mensajes de error
      * @return 
      */
-    public Clasificacion obtenerClasificacion(int codigo, Mensaje ex){
+    public Clasificacion obtenerClasificacion(Representante rep, Mensaje ex){
         Clasificacion clasificacion = new Clasificacion();
         try{
             //Conexión con el usuario actual
             Connection conexion = locator.getConexion();
             //Ejecución de la sentencia SQL
-            String strSQL = "select N_NOMBRE,V_COMISION from clasificacion where K_ID=?";
+            String strSQL = "select n_nombre,v_comision "
+                          + "from historico_clasificacion hc, clasificacion c "
+                          + "where f_id_clasificacion=k_id and f_tipo_id = ? "
+                          + "and f_num_id = ? order by d_fecha_inicial desc";
             PreparedStatement prepStmt = conexion.prepareStatement(strSQL);
-            prepStmt.setInt(1, codigo);
+            prepStmt.setString(1, Character.toString(rep.getTipoId()));
+            prepStmt.setString(2, rep.getIdRep());
             ResultSet resultado = prepStmt.executeQuery();
             
             //Se crea un objeto de tipo clasificación y se configura
-            while(resultado.next()){
+            if(resultado.next()){
                 clasificacion.setNombre(resultado.getString(1));
                 clasificacion.setComision(resultado.getDouble(2));
             }
@@ -50,6 +55,7 @@ public class ClasificacionDAO {
         }catch(SQLException e){
             //Si hay un error, se configura el mensaje y se retorna nulo
             ex.setMensaje(e.getLocalizedMessage());
+            System.out.println(e.getLocalizedMessage());
             return null;
         }finally{
             this.locator=null;

@@ -76,6 +76,7 @@
                     <th scope="col">Cliente</th>
                     <th scope="col">Modificar</th>
                     <th scope="col">Cancelar</th>
+                    <th scope="col">Pagar</th>
                 </tr>
             </thead>
             <tbody>
@@ -86,8 +87,8 @@
                     dao.setLocator((ServiceLocator)request.getSession().getAttribute("conexion"));
                     ClienteDAO dao1 = new ClienteDAO();
                     dao1.setLocator((ServiceLocator)request.getSession().getAttribute("conexion"));
-                    ArrayList<Cliente> clientes = new ArrayList<Cliente>();
-                    ArrayList<Pedido> pedidos = new ArrayList<Pedido>();
+                    ArrayList<Cliente> clientes = new ArrayList();
+                    ArrayList<Pedido> pedidos = new ArrayList();
                     if (rep.getIdRep() != null) {
                         clientes = dao1.obtenerClientes(rep, new Mensaje());
                     }
@@ -100,7 +101,6 @@
                     }
                     int i = 0;
                     for (Pedido ped : pedidos) {
-                        System.out.println("Llegué al for de muestra");
                         out.println("<tr>");
                         out.println("<th scope=\"row\">" + (i + 1) + "</th>");
                         out.println("<td>" + ped.getIdFactura() + "</td>");
@@ -108,7 +108,7 @@
                         out.println("<td>" + ped.getEstado() + "</td>");
                         out.println("<td>" + ped.getCliente().getNombre() + "</td>");
                         out.println("<td>");
-                        out.println("<form action=\"formulario_Venta.jsp\">");
+                        out.println("<form action=modificacionPedido>");
                         out.println("<input type=\"hidden\" name=\"mod\" value=\"" + i + "\">");
                         out.println("<input type=\"submit\" value=\"Modificar\" class=\"btn btn-dark\">");
                         out.println("</form>");
@@ -117,6 +117,12 @@
                         out.println("<form action=cancelacionPedido>");
                         out.println("<input type=\"hidden\" name=\"can\" value=\"" + i + "\">");
                         out.println("<input type=\"image\" value=\"Cancelar\" class=\"btn btn-dark\">");
+                        out.println("</form>");
+                        out.println("</td>");
+                        out.println("<td>");
+                        out.println("<form action=pagoPedido>");
+                        out.println("<input type=\"hidden\" name=\"pag\" value=\"" + i + "\">");
+                        out.println("<input type=\"image\" value=\"Pagar\" class=\"btn btn-dark\">");
                         out.println("</form>");
                         out.println("</td>");
                         out.println("</tr>");

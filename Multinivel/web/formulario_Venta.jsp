@@ -4,6 +4,7 @@
     Author     : thrash
 --%>
 
+<%@page import="datos.PedidoDAO"%>
 <%@page import="negocio.Pedido"%>
 <%@page import="negocio.Cliente"%>
 <%@page import="datos.ClienteDAO"%>
@@ -64,7 +65,7 @@
             <h1>Ingreso de pedido de productos</h1>
         </div>
 
-        <form>
+        <form action=agregadoProducto>
             <div class="container">
                 <div class="row" id = "header-ingreso-producto">
                     <div class = "column">
@@ -101,76 +102,35 @@
             </thead>
             <tbody>
                 <%
-                    boolean modificar = false;
-                    if(request.getSession().getAttribute("modificado")!=null){
-                        modificar = (Boolean) request.getSession().getAttribute("modificado");
+                    if(request.getParameter("terminar")!=null){
+                        request.getSession().setAttribute("pedido_actual", 0);
+                        request.getSession().setAttribute("cliente_actual", null);
                     }
-                    Representante rep = (Representante) request.getSession().getAttribute("rep");
-                    Cliente cli = (Cliente) request.getSession().getAttribute("cli");
-                    ArrayList<Pedido> pedidos = (ArrayList<Pedido>)request.getSession().getAttribute("arrPed");
-                    Pedido mod = null;
-                    if(request.getParameter("mod")!=null){
-                        modificar =true;
-                        request.getSession().setAttribute("modificado",true);
-                        mod = pedidos.get(Integer.parseInt(request.getParameter("mod")));
-                        request.getSession().setAttribute("pedidoMod", mod);
-                    }
-                    InventarioDAO inv = new InventarioDAO();
-                    inv.setLocator((ServiceLocator)request.getSession().getAttribute("conexion"));
-                    ArrayList<DetallePedido> arr = (ArrayList<DetallePedido>) request.getSession().getAttribute("det");
-                    ArrayList<ProductoInventario> prod = (ArrayList<ProductoInventario>) request.getSession().getAttribute("pro");
-                    if (arr == null) {
-                        arr = new ArrayList<DetallePedido>();
-                        prod = new ArrayList<ProductoInventario>();
-                    }
-                    if(mod!=null){
-                        arr = mod.getItems();
-                        for(DetallePedido d:arr){
-                            ProductoInventario p = inv.obtenerProducto(d.getProducto(), new Mensaje());
-                            prod.add(p);
+                    if((Integer)request.getSession().getAttribute("pedido_actual")!=0){
+                        PedidoDAO objPedidoDAO = new PedidoDAO();
+                        objPedidoDAO.setLocator((ServiceLocator)request.getSession().getAttribute("conexion"));
+                        InventarioDAO objInventarioDAO = new InventarioDAO();
+                        Pedido pedido = objPedidoDAO.obtenerPedidos((Integer)request.getSession().getAttribute("pedido_actual"), new Mensaje());
+                        int i = 1;
+                        for (DetallePedido deta : pedido.getItems()) { 
+                            objInventarioDAO.setLocator((ServiceLocator)request.getSession().getAttribute("conexion"));
+                            ProductoInventario prod = objInventarioDAO.obtenerProducto(deta.getProducto(), new Mensaje());
+                            out.println("<tr>");
+                            out.println("<th scope=\"row\">" + i + "</th>");
+                            out.println("<td>" + deta.getProducto() + "</td>");
+                            out.println("<td>" + prod.getNombreProducto() + "</td>");
+                            out.println("<td>" + deta.getCantidad() + "</td>");
+                            out.println("<td>" + deta.getCantidad() * prod.getPrecio() + "</td>");
+                            out.println("<td>" + prod.getIva() + "</td>");
+                            out.println("<td>" + deta.getCantidad() * prod.getPrecio() * (1 + prod.getIva() / 100) + "</td>");
+                            out.println("<td><form action = borradoProducto>");
+                            out.println("<input type=\"hidden\" name=\"borrar\" value=\"" + deta.getProducto() + "\" class=\"btn btn-dark\">");
+                            out.println("<input type=\"submit\" name=\"borrarb\" value=\"Borrar\" class=\"btn btn-dark\">");
+                            out.println("</form></td>");
+                            out.println("</tr>");
+                            i++;
                         }
                     }
-                    
-                    int cantidad = 0;
-                    int codigo = 0;
-
-                    Mensaje ex = new Mensaje();
-                    ProductoInventario producto = null;
-                    try {
-                        cantidad = Integer.parseInt(request.getParameter("cantidad"));
-                        codigo = Integer.parseInt(request.getParameter("codigo"));
-                        inv.setLocator((ServiceLocator)request.getSession().getAttribute("conexion"));
-                        producto = inv.obtenerProducto(codigo, ex);
-                    } catch (Exception e) {
-
-                    }
-
-                    if (producto != null) {
-                        prod.add(producto);
-                        DetallePedido detalle = new DetallePedido();
-                        detalle.setCantidad(cantidad);
-                        detalle.setProducto(codigo);
-                        arr.add(detalle);
-                    }
-                    
-                    request.getSession().setAttribute("det", arr);
-                    request.getSession().setAttribute("pro", prod);
-                    int i = 1;
-                    for (DetallePedido deta : arr) {
-                        deta.setItem(i);
-                        out.println("<tr>");
-                        out.println("<th scope=\"row\">" + i + "</th>");
-                        out.println("<td>" + deta.getProducto() + "</td>");
-                        out.println("<td>" + prod.get(i - 1).getNombreProducto() + "</td>");
-                        out.println("<td>" + deta.getCantidad() + "</td>");
-                        out.println("<td>" + deta.getCantidad() * prod.get(i - 1).getPrecio() + "</td>");
-                        out.println("<td>" + prod.get(i - 1).getIva() + "</td>");
-                        out.println("<td>" + deta.getCantidad() * prod.get(i - 1).getPrecio() * (1 + prod.get(i - 1).getIva() / 100) + "</td>");
-                        out.println("<td><form action = borradoProducto><input type=\"submit\" name=\"borrar\" value = \"borrar" + i + "\" class=\"btn btn-dark\"></form></td>");
-                        out.println("</tr>");
-                        i++;
-                    }
-
                 %>
             </tbody>
             <tfoot>
@@ -178,37 +138,36 @@
             <th scope="col"> $ 0.00</th>
         </tfoot>
     </table>
-    <form action=registroPedido>
+    <form action=clienteSeleccionado>
     <div class="form-group">
             <%;
-            if(!modificar){
+            if(((Cliente)request.getSession().getAttribute("cliente_actual"))==null){
                 ClienteDAO dao1 = new ClienteDAO();
+                ArrayList<Cliente> clientes = new ArrayList();
+                Representante rep = (Representante) request.getSession().getAttribute("rep");
+                Cliente cli = (Cliente) request.getSession().getAttribute("cli");
                 dao1.setLocator((ServiceLocator)request.getSession().getAttribute("conexion"));
-                ArrayList<Cliente> clientes = dao1.obtenerClientes(rep, new Mensaje());
-                i=0;
+                int i=0;
+                if(cli.getNombre() != null){
+                    clientes.add(cli);
+                }
+                clientes.addAll(dao1.obtenerClientes(rep, new Mensaje()));
                 out.println("<label for=\"K_TIPO_ID\">Cliente: </label>");
                 out.println("<select class=\"form-control\" id=\"cliente\" name=\"cliente\">");
-                for(Cliente c:clientes){
+                for(Cliente c: clientes){
                     out.println("<option value=\""+i+"\">"+c.getTipoId()+c.getIdCliente()+" "+c.getNombre()+"</option>");
                     i++;
                 }
                 out.println("</select>");
+                out.println("<input type=\"submit\" value = \"Crear Pedido\" class=\"btn btn-dark\">");
                 request.getSession().setAttribute("aclientes", clientes);
             }
             %>        
     </div>
-        <%if(!modificar){%>
-            <input type="submit" value = "enviar como representante" class="btn btn-dark">
-        <%}%>
     </form>
-    <%if(!modificar){%>
-    <form action=registroPedidoC>
-        <input type="submit" value = "enviar como cliente" class="btn btn-dark">
-    </form>
-    <%}%>
-    <%if(modificar){%>
-    <form action=modificacionPedido>
-        <input type="submit" value = "Modificar" class="btn btn-dark">
+    <%if(((Cliente)request.getSession().getAttribute("cliente_actual"))!=null){%>
+    <form>
+        <input type="submit" name = "terminar" value = "Terminar" class="btn btn-dark">
     </form>
     <%}%>
     <script src="vendor/jquery/jquery-3.2.1.min.js"></script>

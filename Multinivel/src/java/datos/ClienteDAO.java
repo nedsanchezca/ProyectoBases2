@@ -68,7 +68,7 @@ public class ClienteDAO {
         prepStmt.setBigDecimal(3, cliente.getTelefono()); 
         prepStmt.setString(4, cliente.getCorreo()); 
         prepStmt.setString(5, cliente.getIdRep());   
-        prepStmt.setString(6, Character.toString(cliente.getTipoId()));
+        prepStmt.setString(6, cliente.getTipoIdRep());
         prepStmt.executeUpdate();
         prepStmt.close();
         
@@ -189,6 +189,9 @@ public class ClienteDAO {
             prepStmt.close();
             
         }catch(SQLException e){
+            //Mensaje de error
+            ex.setMensaje(e.getLocalizedMessage());
+        }catch(NullPointerException e){
             //Mensaje de error
             ex.setMensaje(e.getLocalizedMessage());
         }finally{

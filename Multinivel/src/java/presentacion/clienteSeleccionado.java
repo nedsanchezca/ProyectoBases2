@@ -13,16 +13,15 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import negocio.DetallePedido;
-import negocio.ProductoInventario;
+import negocio.Cliente;
 import util.Mensaje;
 import util.ServiceLocator;
 
 /**
  *
- * @author thrash
+ * @author Manuel Bernal
  */
-public class borradoProducto extends HttpServlet {
+public class clienteSeleccionado extends HttpServlet {
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -36,21 +35,19 @@ public class borradoProducto extends HttpServlet {
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
-        
-        PedidoDAO objPedidoDAO = new PedidoDAO();
-        objPedidoDAO.setLocator((ServiceLocator)request.getSession().getAttribute("conexion"));
-        
-        int codigo = Integer.parseInt(request.getParameter("borrar"));
-        int nPedido = (int)request.getSession().getAttribute("pedido_actual");
-        
-        Mensaje ex = objPedidoDAO.borrarProducto(codigo,nPedido);
-        
+        ArrayList<Cliente> aClientes = (ArrayList<Cliente>)request.getSession().getAttribute("aclientes");
+        request.getSession().setAttribute("cliente_actual", aClientes.get(Integer.parseInt(request.getParameter("cliente"))));
+        PedidoDAO dao = new PedidoDAO();
+        Mensaje ex = new Mensaje();
+        dao.setLocator((ServiceLocator)request.getSession().getAttribute("conexion"));
+        int id = dao.registrarPedido(aClientes.get(Integer.parseInt(request.getParameter("cliente"))), ex);
         if(ex.getMensaje()==null){
-            request.getSession().setAttribute("pedido_actual", nPedido);
+            request.getSession().setAttribute("cliente_actual", aClientes.get(Integer.parseInt(request.getParameter("cliente"))));
+            request.getSession().setAttribute("pedido_actual",id);
             response.sendRedirect("/Multinivel/formulario_Venta.jsp");
         }else{
             try (PrintWriter out = response.getWriter()) {
-                out.println("<meta http-equiv='refresh' content='3;URL=formulario_Venta.html'>");
+                out.println("<meta http-equiv='refresh' content='3;URL=formulario_Venta.jsp'>");
                 out.println("<html>");
                 out.println("<head>");
                 out.println("<title>Servlet testing</title>");            
