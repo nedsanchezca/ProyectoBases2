@@ -89,7 +89,7 @@ end;
 CREATE TABLE  calificacion
 (
 	K_ID NUMBER(7) NOT NULL,    -- Identificacion de cada una de las calificaciones
-	V_VALORACION NUMBER(1) NOT NULL,    -- Valor de la calificación
+	V_VALORACION NUMBER(1) NOT NULL,    -- Valor de la calificaciï¿½n
 	N_COMENTARIO VARCHAR(200) NULL,    -- Comentario de la venta
 	F_N_FACTURA NUMBER(7) NOT NULL    -- Almacena la llave foranea de la factura
 )
@@ -130,7 +130,7 @@ CREATE TABLE  detalle_pedido
 	K_ITEM NUMBER(4) NOT NULL,    -- Numero de identificacion del producto
 	V_CANTIDAD NUMBER(5) NOT NULL,    -- Indica la candidad comprada de determinado producto
 	F_N_FACTURA NUMBER(7) NOT NULL,    -- Relaciona el detalle con la factura a la que pertenece
-	F_ID_INVENTARIO NUMBER(8) NOT NULL    -- Relaciona el detalle de cada pedido con el inventario de la región
+	F_ID_INVENTARIO NUMBER(8) NOT NULL    -- Relaciona el detalle de cada pedido con el inventario de la regiï¿½n
 )
 ;
 
@@ -157,7 +157,7 @@ CREATE TABLE  inventario
 
 CREATE TABLE  pais
 (
-	K_CODIGO_ISO_NUM NUMBER(3) NOT NULL,    -- ISO 3166-1 como parte del estándar ISO 3166 proporciona códigos para los nombres de países y otras dependencias administrativas. ISO 3166-1 numérico, sistema de tres dígitos.
+	K_CODIGO_ISO_NUM NUMBER(3) NOT NULL,    -- ISO 3166-1 como parte del estï¿½ndar ISO 3166 proporciona cï¿½digos para los nombres de paï¿½ses y otras dependencias administrativas. ISO 3166-1 numï¿½rico, sistema de tres dï¿½gitos.
 	N_NOMBRE VARCHAR(70) NOT NULL    -- Nombre del pais
 )
 ;
@@ -195,7 +195,7 @@ CREATE TABLE  region
 (
 	K_CODIGO_POSTAL VARCHAR(7) NOT NULL,    -- Codigo postal de la region
 	N_NOMBRE VARCHAR(30) NOT NULL,    -- nombre de la regional
-	F_CODIGO_ISO_NUM NUMBER(3) NOT NULL,    -- Llave foranea que indica el país al cual pertenece la region
+	F_CODIGO_ISO_NUM NUMBER(3) NOT NULL,    -- Llave foranea que indica el paï¿½s al cual pertenece la region
 	F_NUMERO_ID VARCHAR(40) NULL,
 	F_TIPO_ID CHAR(1) NULL
 )
@@ -210,8 +210,8 @@ CREATE TABLE  rep_ventas
 	I_GENERO CHAR(1) NOT NULL,    -- Genero del representante de ventas
 	D_FECHA_CONTRATO DATE NOT NULL,    -- Fecha de contratacion del representante de ventas
 	D_FECHA_NACIMIENTO DATE NOT NULL,    -- Fecha de nacimiento del representante de ventas
-	F_ID_REP_CAPATADOR VARCHAR(40) NOT NULL,    -- Recible llave foranea de otro representante de ventas que lo ha captado
-	F_TIPO_ID_REP_CAPATADOR CHAR(1) NOT NULL,    -- Recible llave foranea de otro representante de ventas que lo ha captado
+	F_ID_REP_CAPATADOR VARCHAR(40) NULL,    -- Recible llave foranea de otro representante de ventas que lo ha captado
+	F_TIPO_ID_REP_CAPATADOR CHAR(1) NULL,    -- Recible llave foranea de otro representante de ventas que lo ha captado
 	F_CODIGO_POSTAL VARCHAR(7) NOT NULL    -- Recible llave foranea de a region a la que pertenece el representante de ventas
 )
 ;
@@ -224,7 +224,7 @@ COMMENT ON TABLE  calificacion IS 'Contiene los registros de cada calificacion a
 COMMENT ON COLUMN  calificacion.K_ID IS 'Identificacion de cada una de las calificaciones'
 ;
 
-COMMENT ON COLUMN  calificacion.V_VALORACION IS 'Valor de la calificación'
+COMMENT ON COLUMN  calificacion.V_VALORACION IS 'Valor de la calificaciï¿½n'
 ;
 
 COMMENT ON COLUMN  calificacion.N_COMENTARIO IS 'Comentario de la venta'
@@ -290,7 +290,7 @@ COMMENT ON COLUMN  detalle_pedido.V_CANTIDAD IS 'Indica la candidad comprada de 
 COMMENT ON COLUMN  detalle_pedido.F_N_FACTURA IS 'Relaciona el detalle con la factura a la que pertenece'
 ;
 
-COMMENT ON COLUMN  detalle_pedido.F_ID_INVENTARIO IS 'Relaciona el detalle de cada pedido con el inventario de la región'
+COMMENT ON COLUMN  detalle_pedido.F_ID_INVENTARIO IS 'Relaciona el detalle de cada pedido con el inventario de la regiï¿½n'
 ;
 
 COMMENT ON TABLE  inventario IS 'Almacena los productos de una region'
@@ -314,7 +314,7 @@ COMMENT ON COLUMN  inventario.F_CODIGO_POSTAL IS 'Recibe la llave foranea del co
 COMMENT ON TABLE  pais IS 'Pais el cual contiene regiones'
 ;
 
-COMMENT ON COLUMN  pais.K_CODIGO_ISO_NUM IS 'ISO 3166-1 como parte del estándar ISO 3166 proporciona códigos para los nombres de países y otras dependencias administrativas. ISO 3166-1 numérico, sistema de tres dígitos.'
+COMMENT ON COLUMN  pais.K_CODIGO_ISO_NUM IS 'ISO 3166-1 como parte del estï¿½ndar ISO 3166 proporciona cï¿½digos para los nombres de paï¿½ses y otras dependencias administrativas. ISO 3166-1 numï¿½rico, sistema de tres dï¿½gitos.'
 ;
 
 COMMENT ON COLUMN  pais.N_NOMBRE IS 'Nombre del pais'
@@ -377,7 +377,7 @@ COMMENT ON COLUMN  region.K_CODIGO_POSTAL IS 'Codigo postal de la region'
 COMMENT ON COLUMN  region.N_NOMBRE IS 'nombre de la regional'
 ;
 
-COMMENT ON COLUMN  region.F_CODIGO_ISO_NUM IS 'Llave foranea que indica el país al cual pertenece la region'
+COMMENT ON COLUMN  region.F_CODIGO_ISO_NUM IS 'Llave foranea que indica el paï¿½s al cual pertenece la region'
 ;
 
 COMMENT ON TABLE  rep_ventas IS 'Informacion sobre los representantes de ventas'
@@ -472,11 +472,11 @@ ALTER TABLE  cliente
 ;
 
 ALTER TABLE  cliente 
- ADD CONSTRAINT CK_TELEFONO CHECK (T_TELEFONO>O)
+ ADD CONSTRAINT CK_TELEFONO CHECK (T_TELEFONO>0)
 ;
 
 ALTER TABLE  cliente 
- ADD CONSTRAINT CK_REP_VENTAS CHECK ((F_ID_REP_VENTAS NOT LIKE F_NUMERO_ID) AND (F_TIPO_ID_REP_VENTAS NOT LIKE F_TIPO_ID))
+ ADD CONSTRAINT CK_REP_VENTAS CHECK ((F_ID_REP_VENTAS NOT LIKE F_NUMERO_ID) OR (F_TIPO_ID_REP_VENTAS NOT LIKE F_TIPO_ID))
 ;
 
 ALTER TABLE  detalle_pedido 

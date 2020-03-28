@@ -7,12 +7,12 @@
 /*Creación de los tablespaces para el usuario (esquema) propietario de la BD*/
 
 CREATE TABLESPACE DEF_NATAME
-DATAFILE '/u01/app/oracle/oradata/XE/def_natame.dbf'
+DATAFILE 'C:/oraclexe/app/oracle/oradata/XE/def_natame.dbf'
 SIZE 2M
 AUTOEXTEND ON;
 
 CREATE TEMPORARY TABLESPACE TMP_NATAME
-TEMPFILE '/u01/app/oracle/oradata/XE/tmp_natame.dbf'
+TEMPFILE 'C:/oraclexe/app/oracle/oradata/XE/tmp_natame.dbf'
 SIZE 2M
 AUTOEXTEND ON;
 
@@ -23,7 +23,6 @@ IDENTIFIED BY natame
 DEFAULT TABLESPACE DEF_NATAME
 TEMPORARY TABLESPACE TMP_NATAME
 QUOTA 2M ON DEF_NATAME
-PASSWORD EXPIRE;
 
 GRANT CONNECT,RESOURCE,DBA TO NATAME;
 
