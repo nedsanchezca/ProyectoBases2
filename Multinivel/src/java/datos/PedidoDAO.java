@@ -44,7 +44,6 @@ public class PedidoDAO {
             caStatement.execute();
             return error;
         } catch (SQLException ex) {
-            System.out.println("Holaa");
             error.setMensaje(ex.getLocalizedMessage());
         } finally{
             return error;
@@ -220,7 +219,8 @@ public class PedidoDAO {
     public ArrayList<Pedido> obtenerPedidos(Cliente cliente, String estado, Mensaje ex){
         ArrayList<Pedido> pedidos = new ArrayList<Pedido>();
         try{
-            String strSQL = "SELECT * FROM pedido WHERE F_NUMERO_ID=? AND F_TIPO_ID=? AND I_ESTADO = ?";
+            String strSQL = "(SELECT * FROM pedido WHERE F_NUMERO_ID=? AND F_TIPO_ID=? AND I_ESTADO = ?) MINUS "
+                    + "(SELECT pedido.* FROM pedido,calificacion WHERE F_N_FACTURA=K_N_FACTURA)";
             Connection conexion = locator.getConexion();
             PreparedStatement prepStmt = conexion.prepareStatement(strSQL);
             prepStmt.setString(1,cliente.getIdCliente());
@@ -230,6 +230,7 @@ public class PedidoDAO {
             strSQL = "SELECT * FROM detalle_pedido WHERE F_N_FACTURA=?";
             
             while(pedido.next()){
+                System.out.println(pedido.getInt(1));
                 ArrayList<DetallePedido> detLeidos = new ArrayList<DetallePedido>();
                 Pedido leido = new Pedido();
                 leido.setIdFactura(pedido.getInt(1));
@@ -294,6 +295,28 @@ public class PedidoDAO {
             this.locator = null;
         }
         return leido;
+    }
+    
+    public Mensaje pagarPedido(int pedido){
+        Mensaje error = new Mensaje();
+        try {
+            //Tomar la conexión
+            Connection conexion = locator.getConexion();
+            String prStatement = "UPDATE PEDIDO SET I_ESTADO = \'P\' WHERE K_N_FACTURA=?";
+            PreparedStatement prepStmt = conexion.prepareStatement(prStatement);
+            prepStmt.setInt(1, pedido); 
+            prepStmt.executeUpdate();
+            prepStmt.close();
+            locator.commit();
+            return error;
+        } catch (SQLException ex) {
+            locator.rollback();
+            error.setMensaje(ex.getLocalizedMessage());
+            System.out.println(error.getMensaje());
+        } finally{
+            locator = null;
+            return error;
+        }
     }
     
     public void setLocator(ServiceLocator locator){

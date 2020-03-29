@@ -6,6 +6,7 @@
 package datos;
 
 import java.math.BigDecimal;
+import java.sql.CallableStatement;
 import negocio.Cliente;
 import util.ServiceLocator;
 import java.sql.Connection;
@@ -71,10 +72,17 @@ public class ClienteDAO {
         prepStmt.setString(6, cliente.getTipoIdRep());
         prepStmt.executeUpdate();
         prepStmt.close();
-        
+
+        String prStatement = "{ call PR_CREAR_USUARIO(?, ?) }";
+        CallableStatement caStatement = conexion.prepareCall(prStatement);
+        caStatement.setString(1, Character.toString(cliente.getTipoId()));
+        caStatement.setString(2, cliente.getIdCliente());
+        caStatement.execute();
+                
         locator.commit();
       } catch (SQLException e) {
           //Si hay un error, se actualiza el mensaje de error
+          locator.rollback();
           ex.setMensaje(e.getLocalizedMessage());
       }  finally {
           //Siempre se libera la conexión

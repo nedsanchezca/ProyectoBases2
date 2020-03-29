@@ -1,5 +1,6 @@
 package datos;
 
+import java.sql.CallableStatement;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
@@ -84,16 +85,11 @@ public class RepresentanteDAO {
             prepStmt.setString(2, Character.toString(representante.getTipoId()));
             prepStmt.executeUpdate();
             
-            /*Crea un usuario en la base de datos para el nuevo representante*/
-            strSQL = "CREATE USER " + representante.getTipoId() + representante.getIdRep() 
-                   + " IDENTIFIED BY " + representante.getIdRep();
-            prepStmt = conexion.prepareStatement(strSQL);
-            prepStmt.execute();
-            
-            /*Asigna el rol de repventas al nuevo*/
-            strSQL = "GRANT R_REPVENTAS TO " + representante.getTipoId() + representante.getIdRep();
-            prepStmt = conexion.prepareStatement(strSQL);
-            prepStmt.execute();
+            String prStatement = "{ call PR_CREAR_USUARIO(?, ?) }";
+            CallableStatement caStatement = conexion.prepareCall(prStatement);
+            caStatement.setString(1, Character.toString(representante.getTipoId()));
+            caStatement.setString(2, representante.getIdRep());
+            caStatement.execute();
             
             /*Cierra y hace efectivos los cambios*/
             prepStmt.close();
@@ -159,6 +155,27 @@ public class RepresentanteDAO {
             rep=null;
         }
         return rep;
+    }
+    
+    public Mensaje calificarRepresentante(int cal, String comentario, int numPedido){
+        Mensaje mensaje = new Mensaje();
+        try{
+            String strSQL = "insert into calificacion values(calificacion_seq.nextval,?,?,?)";
+            Connection conexion = locator.getConexion();
+            PreparedStatement prepStmt = conexion.prepareStatement(strSQL);
+            prepStmt.setInt(1, cal);
+            prepStmt.setString(2, comentario);
+            prepStmt.setInt(3, numPedido);
+            prepStmt.executeUpdate();
+            prepStmt.close();
+            locator.commit();
+        }catch(SQLException e){
+            locator.rollback();
+            mensaje.setMensaje(e.getLocalizedMessage());
+        }finally{
+            this.locator=null;
+            return mensaje;
+        }
     }
     
     public void setLocator(ServiceLocator locator){
