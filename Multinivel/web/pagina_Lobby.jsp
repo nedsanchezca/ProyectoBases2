@@ -94,7 +94,7 @@
                         <ul class="nav">
                             <li class="active">
                                 <a href="#">
-                                    <i class="glyphicon glyphicon-home"></i>
+                                    <i class="zmdi zmdi-card-travelt"></i>
                                     Cambiar datos </a>
                             </li>
                             
@@ -108,9 +108,30 @@
                     <!-- END MENU -->
                 </div>
             </div>
-            <div class="col-md-9">
-                <div class="profile-content">
-                    Contenido a futuro
+                <div class="col-md-9">
+                    <div class="card-deck">
+                        <div class="card">
+                            <div class="card-body">
+                                <h5 class="card-title">Productos del mes</h5>
+                                <p class="card-text">Trapero: $15.000</p>
+                                <p class="card-text"><small class="text-muted">Last updated 3 mins ago</small></p>
+                            </div>
+                        </div>
+                        <div class="card">
+                            <div class="card-body">
+                                <h5 class="card-title">Cliente con mas pedidos</h5>
+                                <p class="card-text">El cliente con mas pedidos</p>
+                                <p class="card-text"><small class="text-muted">Last updated 3 mins ago</small></p>
+                            </div>
+                        </div>
+                        <div class="card">
+                            <div class="card-body">
+                                <h5 class="card-title">Venta acumulada</h5>
+                                <p class="card-text">Hasta el momento llevamos valiendo muchas hectareas</p>
+                                <p class="card-text"><small class="text-muted">Last updated 3 mins ago</small></p>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
