@@ -7,6 +7,7 @@ AS
     l_total NUMBER;
     l_aux NUMBER := 0;
     l_valor_cantidad_invalido EXCEPTION;
+    --aux2
 
 -- Declaración del cursor
     /* Cursor para devolver datos del cliente */
