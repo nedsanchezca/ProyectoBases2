@@ -78,7 +78,7 @@ public class ClienteDAO {
         caStatement.setString(1, Character.toString(cliente.getTipoId()));
         caStatement.setString(2, cliente.getIdCliente());
         caStatement.execute();
-                
+
         locator.commit();
       } catch (SQLException e) {
           //Si hay un error, se actualiza el mensaje de error

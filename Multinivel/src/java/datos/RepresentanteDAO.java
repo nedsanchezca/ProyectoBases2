@@ -5,6 +5,8 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.ResultSet;
+import java.sql.Types;
+import negocio.Cliente;
 import negocio.Representante;
 import util.Mensaje;
 import util.ServiceLocator;
@@ -85,11 +87,16 @@ public class RepresentanteDAO {
             prepStmt.setString(2, Character.toString(representante.getTipoId()));
             prepStmt.executeUpdate();
             
-            String prStatement = "{ call PR_CREAR_USUARIO(?, ?) }";
-            CallableStatement caStatement = conexion.prepareCall(prStatement);
-            caStatement.setString(1, Character.toString(representante.getTipoId()));
-            caStatement.setString(2, representante.getIdRep());
-            caStatement.execute();
+            /*Crea un usuario en la base de datos para el nuevo representante*/
+            strSQL = "CREATE USER " + representante.getTipoId() + representante.getIdRep() 
+                   + " IDENTIFIED BY " + representante.getIdRep();
+            prepStmt = conexion.prepareStatement(strSQL);
+            prepStmt.execute();
+            
+            /*Asigna el rol de repventas al nuevo*/
+            strSQL = "GRANT R_REPVENTAS TO " + representante.getTipoId() + representante.getIdRep();
+            prepStmt = conexion.prepareStatement(strSQL);
+            prepStmt.execute();
             
             /*Cierra y hace efectivos los cambios*/
             prepStmt.close();
@@ -175,6 +182,27 @@ public class RepresentanteDAO {
         }finally{
             this.locator=null;
             return mensaje;
+        }
+    }
+    
+    public Mensaje cambiarRepresentante(Cliente cliente){
+        Mensaje error = new Mensaje();
+        try {
+            //Tomar la conexión
+            Connection conexion = locator.getConexion();
+            String prStatement = "{ call PR_CAMBIAR_RVENTAS(?, ?, ?, ?) }";
+            CallableStatement caStatement = conexion.prepareCall(prStatement);
+            caStatement.setString(1, Character.toString(cliente.getTipoId()));
+            caStatement.setString(2, cliente.getIdCliente());
+            caStatement.registerOutParameter(3, Types.INTEGER);
+            caStatement.registerOutParameter(4, Types.VARCHAR);
+            caStatement.execute();
+            error.setMensaje(caStatement.getInt(3)+" "+caStatement.getString(4));
+            return error;
+        } catch (SQLException ex) {
+            error.setMensaje(ex.getLocalizedMessage());
+        } finally{
+            return error;
         }
     }
     
