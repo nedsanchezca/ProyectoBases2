@@ -50,6 +50,9 @@
                     <li class="nav-item ">
                         <a class="nav-link" href="formulario_Nuevo_Rep.html"> Ingresar Representante <span class="sr-only">(current)</span></a>
                     </li>
+                    <li class="nav-item ">
+                        <a class="nav-link" href="formulario_Cliente.html"> Ingresar Cliente <span class="sr-only">(current)</span></a>
+                    </li>
                     <li class="nav-item">
                         <a class="nav-link disabled" href="formulario_Venta.jsp">Venta</a>
                     </li>
@@ -65,7 +68,8 @@
         <div class="container">
             <h1 class="display-1">Estado de los pedidos</h1>
         </div>
-
+        
+        <p class="lead text-center">Pedidos sin pagar</p>
         <table class="table table-bordered">
             <thead>
                 <tr>
@@ -121,7 +125,7 @@
                         out.println("</td>");
                         out.println("<td>");
                         out.println("<form action=pagoPedido>");
-                        out.println("<input type=\"hidden\" name=\"pag\" value=\"" + i + "\">");
+                        out.println("<input type=\"hidden\" name=\"pag\" value=\"" + ped.getIdFactura() + "\">");
                         out.println("<input type=\"image\" value=\"Pagar\" class=\"btn btn-dark\">");
                         out.println("</form>");
                         out.println("</td>");
@@ -133,6 +137,49 @@
             </tbody>
         </table>
 
+        <p class="lead text-center">Pedidos pagos sin calificar</p>
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th scope="col">#</th>
+                    <th scope="col">Pedido</th>
+                    <th scope="col">Fecha</th>
+                    <th scope="col">Estado</th>
+                    <th scope="col">Cliente</th>
+                    <th scope="col">Calificar</th>
+                </tr>
+            </thead>
+            <tbody>
+                <%
+                    dao.setLocator((ServiceLocator)request.getSession().getAttribute("conexion"));
+                    ArrayList<Pedido> pedidosCal = new ArrayList<Pedido>();
+                    if(cli.getIdCliente() != null){
+                        Mensaje e = new Mensaje();
+                        pedidosCal.addAll(dao.obtenerPedidos(cli,"P", e));
+                        out.println(e.getMensaje());
+                    }
+                    i = 0;
+                    for (Pedido ped : pedidosCal) {
+                        out.println("<tr>");
+                        out.println("<th scope=\"row\">" + (i + 1) + "</th>");
+                        out.println("<td>" + ped.getIdFactura() + "</td>");
+                        out.println("<td>" + ped.getFecha() + "</td>");
+                        out.println("<td>" + ped.getEstado() + "</td>");
+                        out.println("<td>" + ped.getCliente().getNombre() + "</td>");
+                        out.println("<td>");
+                        out.println("<form action=calificar_Representante.jsp>");
+                        out.println("<input type=\"hidden\" name=\"pedcal\" value=\"" + ped.getIdFactura() + "\">");
+                        out.println("<input type=\"submit\" value=\"Calificar\" class=\"btn btn-dark\">");
+                        out.println("</form>");
+                        out.println("</td>");
+                        out.println("</tr>");
+                        i++;
+                    }
+                    request.getSession().setAttribute("arrPedCal", pedidosCal);
+                %>
+            </tbody>
+        </table>
+            
         <script src="vendor/jquery/jquery-3.2.1.min.js"></script>
         <script src="vendor/animsition/js/animsition.min.js"></script>
         <script src="vendor/bootstrap/js/popper.js"></script>

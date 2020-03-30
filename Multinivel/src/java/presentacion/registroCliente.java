@@ -45,7 +45,7 @@ public class registroCliente extends HttpServlet {
         //Obtener valores del formulario
         Cliente clienteI = new Cliente();
         clienteI.setTipoId(request.getParameter("K_TIPO_ID").charAt(0));
-        clienteI.setIdRep(request.getParameter("K_NUMERO_ID"));
+        clienteI.setIdCliente(request.getParameter("K_NUMERO_ID"));
         clienteI.setApellido(request.getParameter("N_APELLIDO"));
         clienteI.setNombre(request.getParameter("N_NOMBRE"));
         clienteI.setCiudad(request.getParameter("C_CIUDAD"));
@@ -65,7 +65,7 @@ public class registroCliente extends HttpServlet {
             response.sendRedirect("/Multinivel/formulario_Nuevo_Rep.html");
         }else{
             try (PrintWriter out = response.getWriter()) {
-                out.println("<meta http-equiv='refresh' content='3;URL=formulario_Nuevo_Rep.html'>");
+                out.println("<meta http-equiv='refresh' content='3;URL=formulario_Cliente.html'>");
                 out.println("<html>");
                 out.println("<head>");
                 out.println("<title>Servlet testing</title>");            
