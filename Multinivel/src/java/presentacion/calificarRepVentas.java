@@ -5,7 +5,7 @@
  */
 package presentacion;
 
-import datos.PedidoDAO;
+import datos.RepresentanteDAO;
 import java.io.IOException;
 import java.io.PrintWriter;
 import javax.servlet.ServletException;
@@ -19,7 +19,7 @@ import util.ServiceLocator;
  *
  * @author Manuel Bernal
  */
-public class agregadoProducto extends HttpServlet {
+public class calificarRepVentas extends HttpServlet {
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -32,42 +32,14 @@ public class agregadoProducto extends HttpServlet {
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        
         response.setContentType("text/html;charset=UTF-8");
+        RepresentanteDAO repDAO = new RepresentanteDAO();
+        repDAO.setLocator((ServiceLocator)request.getSession().getAttribute("conexion"));
         
-        PedidoDAO objPedidoDAO = new PedidoDAO();
-        objPedidoDAO.setLocator((ServiceLocator)request.getSession().getAttribute("conexion"));
-        
-        int cantidad = 0;
-        int codigo = 0;
-        
-        if(!request.getParameter("cantidad").equals("")){
-            cantidad = Integer.parseInt(request.getParameter("cantidad"));
-        }
-        if(!request.getParameter("cantidad").equals("")){
-            codigo = Integer.parseInt(request.getParameter("codigo"));;
-        }
-        
-        int nPedido = (int)request.getSession().getAttribute("pedido_actual");
-        
-        Mensaje ex = objPedidoDAO.agregarProducto(codigo,cantidad,nPedido);
-        
-        if(ex.getMensaje()==null){
-            request.getSession().setAttribute("pedido_actual", nPedido);
-            response.sendRedirect("/Multinivel/formulario_Venta.jsp");
-        }else{
-            try (PrintWriter out = response.getWriter()) {
-                out.println("<meta http-equiv='refresh' content='3;URL=formulario_Venta.jsp'>");
-                out.println("<html>");
-                out.println("<head>");
-                out.println("<title>Servlet testing</title>");            
-                out.println("</head>");
-                out.println("<body>");
-                out.println("<h1>Servlet testing at " + ex+ "</h1>");
-                out.println("</body>");
-                out.println("</html>");
-            }
-        }
+        Mensaje e = repDAO.calificarRepresentante(Integer.parseInt(request.getParameter("V_VALORACION")), 
+                request.getParameter("N_COMENTARIO"), Integer.parseInt(request.getParameter("pedcal")));
+        System.out.println(e.getMensaje());
+        response.sendRedirect("/Multinivel/paginaEstadoPedido.jsp");
     }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">

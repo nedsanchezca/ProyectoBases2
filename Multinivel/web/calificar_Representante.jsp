@@ -1,3 +1,9 @@
+<%-- 
+    Document   : newjsp
+    Created on : 29/09/2019, 10:17:32 p. m.
+    Author     : thrash
+--%>
+
 <!DOCTYPE html>
 <html>
 
@@ -29,38 +35,48 @@
             </span>
         </button>
 
-        <div class="collapse navbar-collapse" id="navbarNatame">
-            <ul class="navbar-nav ml-auto">
-                <li class="nav-item ">
-                    <a class="nav-link" href="pagina_Lobby.jsp">Regresar <span
-                            class="sr-only">(current)</span></a>
-                </li>
-                <li class="nav-item">
-                    <form action=logout><input type="submit" class="nav-link" value="Salir"></form>
-                </li>
-            </ul>
-        </div>
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <ul class="navbar-nav ml-auto">
+                    <li class="nav-item ">
+                        <a class="nav-link" href="formulario_Nuevo_Rep.html"> Ingresar Representante <span class="sr-only">(current)</span></a>
+                    </li>
+                    <li class="nav-item ">
+                        <a class="nav-link" href="formulario_Cliente.html"> Ingresar Cliente <span class="sr-only">(current)</span></a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link disabled" href="formulario_Venta.jsp">Venta</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href = "paginaEstadoPedido.jsp">Estado pedido</a>
+                    </li>
+                    <li class="nav-item">
+                        <form action=logout><input type="submit" class="nav-link" value="Salir"></form>
+                    </li>
+                </ul>
+            </div>
     </nav>
 
     <div class="limiter">
         <section class="container">
             <h3 class="text-uppercase text-center">Calificación del representante de ventas. </h3>
             <p class="lead text-center">Diligencie la siguiente información para evaluar a su representante de ventas</p>
-            <form action=calificareRepVentas class="">
+            <form action=calificarRepVentas class="">
+                <%out.println("<input type=\"hidden\" name = \"pedcal\" value = \""+request.getParameter("pedcal")+"\">");%>
                 <div class="form-group">
-                    <label for="V_VALORACiÓN">Calificación </label>
-                    <select class="form-control" id="K_TIPO_ID" name="K_TIPO_ID">
+                    <label for="V_VALORACION">Calificación </label>
+                    <select class="form-control" id="K_TIPO_ID" name="V_VALORACION">
                         <option value="5">5</option>
                         <option value="4">4</option>
                         <option value="3">3</option>
                         <option value="2">2</option>
                         <option value="1">1</option>
+                        <option value="0">0</option>
                     </select>
                 </div>
 
                 <div class="form-group">
                     <label for="K_NUMERO_ID"> Recomendación </label>
-                    <input class="form-control" id="N_COMENTARIO" name="N_COMENTARIO" type="text" placeholder="Comentario">
+                    <input class="form-control" name="N_COMENTARIO" type="text" placeholder="Comentario">
                 </div>
 
                 <button class="btn btn-primary">Registrar</button>

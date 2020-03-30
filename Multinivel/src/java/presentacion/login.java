@@ -63,7 +63,6 @@ public class login extends HttpServlet {
             Clasificacion cla = null;
             
             Representante rep = repD.obtenerRepresentante(usr.substring(0, 1), usr.substring(1),ex);
-            System.out.println(rep.getApellido());
             Cliente cli = cliD.obtenerCliente(usr.substring(0, 1), usr.substring(1),ex);
             
             if(rep!=null){

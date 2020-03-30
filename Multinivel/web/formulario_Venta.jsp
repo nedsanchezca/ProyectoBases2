@@ -49,6 +49,9 @@
                     <li class="nav-item ">
                         <a class="nav-link" href="formulario_Nuevo_Rep.html"> Ingresar Representante <span class="sr-only">(current)</span></a>
                     </li>
+                    <li class="nav-item ">
+                        <a class="nav-link" href="formulario_Cliente.html"> Ingresar Cliente <span class="sr-only">(current)</span></a>
+                    </li>
                     <li class="nav-item">
                         <a class="nav-link disabled" href="formulario_Venta.jsp">Venta</a>
                     </li>
@@ -72,13 +75,13 @@
                         <h4>Código del producto</h4>
                     </div>
                     <div class="column">
-                        <input type="text" name="codigo">
+                        <input type="text" name="codigo" required>
                     </div>
                     <div class="column">
                         <h4>Cantidad</h4>
                     </div>
                     <div class="column">
-                        <input type="text" name="cantidad">
+                        <input type="text" name="cantidad" required>
                     </div>
                     <div class="column">
                         <input type="submit" value="Agregar" class="btn btn-dark">

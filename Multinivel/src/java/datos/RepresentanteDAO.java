@@ -1,9 +1,12 @@
 package datos;
 
+import java.sql.CallableStatement;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.ResultSet;
+import java.sql.Types;
+import negocio.Cliente;
 import negocio.Representante;
 import util.Mensaje;
 import util.ServiceLocator;
@@ -159,6 +162,48 @@ public class RepresentanteDAO {
             rep=null;
         }
         return rep;
+    }
+    
+    public Mensaje calificarRepresentante(int cal, String comentario, int numPedido){
+        Mensaje mensaje = new Mensaje();
+        try{
+            String strSQL = "insert into calificacion values(calificacion_seq.nextval,?,?,?)";
+            Connection conexion = locator.getConexion();
+            PreparedStatement prepStmt = conexion.prepareStatement(strSQL);
+            prepStmt.setInt(1, cal);
+            prepStmt.setString(2, comentario);
+            prepStmt.setInt(3, numPedido);
+            prepStmt.executeUpdate();
+            prepStmt.close();
+            locator.commit();
+        }catch(SQLException e){
+            locator.rollback();
+            mensaje.setMensaje(e.getLocalizedMessage());
+        }finally{
+            this.locator=null;
+            return mensaje;
+        }
+    }
+    
+    public Mensaje cambiarRepresentante(Cliente cliente){
+        Mensaje error = new Mensaje();
+        try {
+            //Tomar la conexión
+            Connection conexion = locator.getConexion();
+            String prStatement = "{ call PR_CAMBIAR_RVENTAS(?, ?, ?, ?) }";
+            CallableStatement caStatement = conexion.prepareCall(prStatement);
+            caStatement.setString(1, Character.toString(cliente.getTipoId()));
+            caStatement.setString(2, cliente.getIdCliente());
+            caStatement.registerOutParameter(3, Types.INTEGER);
+            caStatement.registerOutParameter(4, Types.VARCHAR);
+            caStatement.execute();
+            error.setMensaje(caStatement.getInt(3)+" "+caStatement.getString(4));
+            return error;
+        } catch (SQLException ex) {
+            error.setMensaje(ex.getLocalizedMessage());
+        } finally{
+            return error;
+        }
     }
     
     public void setLocator(ServiceLocator locator){
