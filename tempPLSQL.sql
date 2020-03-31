@@ -1,3 +1,9 @@
+/*-----------------------------------------------------------------------------------
+  Proyecto   : Ventas multinivel NATAME. Curso BDII
+  Descripcion: Paquete que contiene las variables globales, funciones y procedimientos
+               asociados al módulo de Reservas
+  Autores: Cristian Bernal, Nestor Sanchez, .
+--------------------------------------------------------------------------------------*/
 begin
     EXECUTE IMMEDIATE 'DROP PUBLIC SYNONYM PR_CREAR_USUARIO';
     EXCEPTION WHEN OTHERS THEN NULL;
@@ -22,6 +28,15 @@ begin
 end;  
 /
 
+
+/*------------------------------------------------------------------------------
+Procedimiento para agregar un producto en el inventario y una cantidad a una factura 
+determinada, se asegura de que los items de la factura sean secuenciales.
+Parametros de Entrada: pk_id_inventario     Código del producto para ubicarlo en el inventario.
+                       pv_cantidad          Cantidad del producto que se desea en la factura.
+                       pk_id_pedido         Número del pedido donde se van a agregar los productos.
+Reporta las excepciones cuando falla la inserción o cuando no el producto o la factura de ventas.
+*/
 CREATE OR REPLACE PROCEDURE PR_AGREGAR_PRODUCTO(pk_id_inventario IN INVENTARIO.K_ID%TYPE,
                                                 pv_cantidad IN DETALLE_PEDIDO.V_CANTIDAD%TYPE,
                                                 pk_id_pedido IN PEDIDO.K_N_FACTURA%TYPE)
@@ -34,6 +49,7 @@ AS
                     FROM DETALLE_PEDIDO
                     WHERE F_N_FACTURA=pk_id_pedido;
 BEGIN
+    
     FOR rc_item_maximo IN c_item_maximo LOOP
         lv_contador_detalles := rc_item_maximo.maximo;
     END LOOP;
@@ -62,6 +78,13 @@ EXCEPTION
 END PR_AGREGAR_PRODUCTO;
 /
 
+/*------------------------------------------------------------------------------
+Procedimiento para borrar un producto de una factura determinada, se asegura de que los items 
+de la factura sean secuenciales.
+Parametros de Entrada: pk_id_inventario     Código del producto para ubicarlo en la factura.
+                       pk_id_pedido         Número del pedido donde se va a borrar el productos.
+Reporta las excepciones cuando no existe la factura o el producto ingresado.
+*/
 CREATE OR REPLACE PROCEDURE PR_BORRAR_PRODUCTO(pk_id_inventario IN INVENTARIO.K_ID%TYPE,
                                                pk_id_pedido IN PEDIDO.K_N_FACTURA%TYPE)
 AS 
@@ -89,6 +112,19 @@ EXCEPTION
 END PR_BORRAR_PRODUCTO;
 /
 
+
+/*------------------------------------------------------------------------------
+Procedimiento para cambiar el representante de ventas de un cliente. Sele asigna uno del 
+mismo tipo y regional, si no lo hay se le asigna uno del mismo tipo y si no lo hay, se le
+asigna uno de la misma regional
+Parametros de Entrada: pk_tipo_id           Tipo de identificacion del cliente que quiere cambiar.
+                       pk_num_id            Número de identificacion del cliente que quiere cambiar.
+Parametros de Salida:  pc_error        = 1 si no existe el cliente ingresado,
+                                         2 si no hay nigún representante que cumpla las condiciones,
+                                         0, en otro caso.
+                       pm_error         Mensaje de error o de exito.
+Reporta las excepciones cuando no existe la factura o el producto ingresado.
+*/
 CREATE OR REPLACE PROCEDURE PR_CAMBIAR_RVENTAS(pk_tipo_id IN CLIENTE.F_TIPO_ID%TYPE,
                                                pk_num_id IN CLIENTE.F_NUMERO_ID%TYPE,
                                                pc_error OUT INTEGER,
@@ -96,38 +132,38 @@ CREATE OR REPLACE PROCEDURE PR_CAMBIAR_RVENTAS(pk_tipo_id IN CLIENTE.F_TIPO_ID%T
 
 AS
     EX_NO_ENCONTRADO EXCEPTION;
-    VARIABLE1 V_REPVENTAS_CLAS_REG%ROWTYPE;
-    VARIABLE2 REP_VENTAS.F_TIPO_ID%TYPE;
-    VARIABLE3 REP_VENTAS.F_NUMERO_ID%TYPE;
+    l_info_repventas V_REPVENTAS_CLAS_REG%ROWTYPE;
+    lk_tipo_id_rep REP_VENTAS.F_TIPO_ID%TYPE;
+    lk_num_id_rep REP_VENTAS.F_NUMERO_ID%TYPE;
     C_REPVENTAS_REEMPLAZO SYS_REFCURSOR;
 BEGIN
     pc_error:=0;
-    SELECT V.* INTO VARIABLE1 FROM V_REPVENTAS_CLAS_REG V, CLIENTE C
+    SELECT V.* INTO l_info_repventas FROM V_REPVENTAS_CLAS_REG V, CLIENTE C
     WHERE V.F_TIPO_ID = C.F_TIPO_ID_REP_VENTAS AND V.F_NUMERO_ID = C.F_ID_REP_VENTAS
     AND C.F_TIPO_ID = pk_tipo_id AND C.F_NUMERO_ID = pk_num_id;
 
     OPEN C_REPVENTAS_REEMPLAZO FOR SELECT F_TIPO_ID,F_NUMERO_ID
-    FROM V_REPVENTAS_CLAS_REG WHERE F_CODIGO_POSTAL = VARIABLE1.F_CODIGO_POSTAL
-    AND F_ID_CLASIFICACION = VARIABLE1.F_ID_CLASIFICACION
-    AND (F_TIPO_ID NOT LIKE VARIABLE1.F_TIPO_ID OR F_NUMERO_ID NOT LIKE VARIABLE1.F_NUMERO_ID);
+    FROM V_REPVENTAS_CLAS_REG WHERE F_CODIGO_POSTAL = l_info_repventas.F_CODIGO_POSTAL
+    AND F_ID_CLASIFICACION = l_info_repventas.F_ID_CLASIFICACION
+    AND (F_TIPO_ID NOT LIKE l_info_repventas.F_TIPO_ID OR F_NUMERO_ID NOT LIKE l_info_repventas.F_NUMERO_ID);
 
-    FETCH C_REPVENTAS_REEMPLAZO INTO VARIABLE2,VARIABLE3;
+    FETCH C_REPVENTAS_REEMPLAZO INTO lk_tipo_id_rep,lk_num_id_rep;
     
     IF C_REPVENTAS_REEMPLAZO%NOTFOUND THEN
         CLOSE C_REPVENTAS_REEMPLAZO;
         OPEN C_REPVENTAS_REEMPLAZO FOR SELECT F_TIPO_ID,F_NUMERO_ID
-        FROM V_REPVENTAS_CLAS_REG WHERE F_ID_CLASIFICACION = VARIABLE1.F_ID_CLASIFICACION
-        AND (F_TIPO_ID NOT LIKE VARIABLE1.F_TIPO_ID OR F_NUMERO_ID NOT LIKE VARIABLE1.F_NUMERO_ID);
+        FROM V_REPVENTAS_CLAS_REG WHERE F_ID_CLASIFICACION = l_info_repventas.F_ID_CLASIFICACION
+        AND (F_TIPO_ID NOT LIKE l_info_repventas.F_TIPO_ID OR F_NUMERO_ID NOT LIKE l_info_repventas.F_NUMERO_ID);
 
-        FETCH C_REPVENTAS_REEMPLAZO INTO VARIABLE2,VARIABLE3;
+        FETCH C_REPVENTAS_REEMPLAZO INTO lk_tipo_id_rep,lk_num_id_rep;
 
         IF C_REPVENTAS_REEMPLAZO%NOTFOUND THEN
             CLOSE C_REPVENTAS_REEMPLAZO;
             OPEN C_REPVENTAS_REEMPLAZO FOR SELECT F_TIPO_ID,F_NUMERO_ID
-            FROM V_REPVENTAS_CLAS_REG WHERE F_CODIGO_POSTAL = VARIABLE1.F_CODIGO_POSTAL
-            AND (F_TIPO_ID NOT LIKE VARIABLE1.F_TIPO_ID OR F_NUMERO_ID NOT LIKE VARIABLE1.F_NUMERO_ID);
+            FROM V_REPVENTAS_CLAS_REG WHERE F_CODIGO_POSTAL = l_info_repventas.F_CODIGO_POSTAL
+            AND (F_TIPO_ID NOT LIKE l_info_repventas.F_TIPO_ID OR F_NUMERO_ID NOT LIKE l_info_repventas.F_NUMERO_ID);
 
-            FETCH C_REPVENTAS_REEMPLAZO INTO VARIABLE2,VARIABLE3;
+            FETCH C_REPVENTAS_REEMPLAZO INTO lk_tipo_id_rep,lk_num_id_rep;
             
             IF C_REPVENTAS_REEMPLAZO%NOTFOUND THEN
                 CLOSE C_REPVENTAS_REEMPLAZO;
@@ -138,8 +174,8 @@ BEGIN
     IF C_REPVENTAS_REEMPLAZO%ISOPEN THEN
         CLOSE C_REPVENTAS_REEMPLAZO;
     END IF;
-    pm_error:=VARIABLE2||' '||VARIABLE3;
-    UPDATE CLIENTE SET F_TIPO_ID_REP_VENTAS=VARIABLE2, F_ID_REP_VENTAS=VARIABLE3
+    pm_error:=lk_tipo_id_rep||' '||lk_num_id_rep;
+    UPDATE CLIENTE SET F_TIPO_ID_REP_VENTAS=lk_tipo_id_rep, F_ID_REP_VENTAS=lk_num_id_rep
     WHERE F_TIPO_ID = pk_tipo_id AND F_NUMERO_ID=pk_num_id;
 EXCEPTION
     WHEN NO_DATA_FOUND THEN
@@ -151,6 +187,14 @@ EXCEPTION
 END PR_CAMBIAR_RVENTAS;
 /
 
+
+/*------------------------------------------------------------------------------
+Procedimiento auxiliar para crear usuarios en el sistema y no conferir directamente el privilegio
+de crear usuarios.
+Parametros de Entrada: pk_tipo_id           Tipo de identificacion del cliente al que corresponde el nuevo usuario.
+                       pk_num_id            Número de identificacion del cliente al que corresponde el nuevo usuario.
+Reporta las excepciones cuando no existe la factura o el producto ingresado.
+*/
 CREATE OR REPLACE PROCEDURE PR_CREAR_USUARIO(pk_tipo_id IN CLIENTE.F_TIPO_ID%TYPE,
                                              pk_num_id IN CLIENTE.F_NUMERO_ID%TYPE)
 AS
@@ -164,6 +208,11 @@ BEGIN
 END PR_CREAR_USUARIO;
 /
 
+
+/*------------------------------------------------------------------------------
+Trigger que se encarga de sumar o restar el stock asociado a un producto cuando se borra
+o se agrega una entrada con este producto a la tabla detalle_pedido.
+*/
 CREATE OR REPLACE TRIGGER TG_STOCK_PRODUCTO
     BEFORE INSERT OR DELETE ON DETALLE_PEDIDO
     FOR EACH ROW
