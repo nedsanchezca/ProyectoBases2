@@ -204,6 +204,7 @@ GRANT SELECT ON detalle_seq TO r_RepVentas;
 GRANT SELECT,INSERT ON historico_clasificacion TO r_RepVentas;
 
 CREATE ROLE r_cliente;
+GRANT EXECUTE ON PK_GESTION_CLIENTE.PR_CAMBIAR_RVENTAS TO R_CLIENTE;
 GRANT CREATE SESSION TO r_cliente;
 GRANT SELECT ON calificacion_seq TO r_cliente;
 GRANT SELECT,INSERT,UPDATE ON calificacion TO r_cliente;
