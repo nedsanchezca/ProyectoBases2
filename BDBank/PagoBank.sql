@@ -19,6 +19,7 @@ AS
         WHERE C.FK_CLIENTE = CE.K_CLIENTE;
     lc_pagoBanco c_pagoBanco%ROWTYPE;
 BEGIN
+    SET TRANSACTION NAME 'PAGO_DE_BANCO'
     OPEN c_pagoBanco;
     LOOP
         FETCH c_pagoBanco INTO lc_pagoBanco;

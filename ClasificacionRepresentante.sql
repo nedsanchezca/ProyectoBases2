@@ -39,7 +39,6 @@ BEGIN
         FETCH c_totalVentas INTO lc_totalVentas;
         EXIT WHEN c_totalVentas%NOTFOUND;
         DBMS_OUTPUT.PUT_LINE(lc_totalVentas.total||' - '||lc_totalVentas.N_NOMBRE||' '||lc_totalVentas.N_APELLIDO);
-        --DBMS_OUTPUT.PUT_LINE(lc_totalVentas.n_nombre);
     END LOOP;
     CLOSE c_totalVentas;
 END PR_clasificarRepresentante;
