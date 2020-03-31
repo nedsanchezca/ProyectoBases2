@@ -1,7 +1,7 @@
 /*-----------------------------------------------------------------------------------
   Proyecto   : Ventas multinivel NATAME. Curso BDII
-  Descripcion: Funciones y procedimientos asociados al módulo de Gestión de clientes.
-  Autores    : Nestor Sanchez, Jairo Andrés Romero, Gabriela Ladino, Juan Diego Avila, Cristian Bernal.
+  Descripcion: Funciones y procedimientos asociados al mï¿½dulo de Gestiï¿½n de clientes.
+  Autores    : Nestor Sanchez, Jairo Andrï¿½s Romero, Gabriela Ladino, Juan Diego Avila, Cristian Bernal.
 --------------------------------------------------------------------------------------*/
 
 /*------------------Package Header-------------------------*/
@@ -12,9 +12,9 @@ CREATE OR REPLACE PACKAGE PK_GESTION_CLIENTE AS
     mismo tipo y regional, si no lo hay se le asigna uno del mismo tipo y si no lo hay, se le
     asigna uno de la misma regional
     Parametros de Entrada: pk_tipo_id           Tipo de identificacion del cliente que quiere cambiar.
-                           pk_num_id            Número de identificacion del cliente que quiere cambiar.
+                           pk_num_id            Nï¿½mero de identificacion del cliente que quiere cambiar.
     Parametros de Salida:  pc_error        = 1 si no existe el cliente ingresado,
-                                             2 si no hay nigún representante que cumpla las condiciones,
+                                             2 si no hay nigï¿½n representante que cumpla las condiciones,
                                              0, en otro caso.
                            pm_error         Mensaje de error o de exito.
     Reporta las excepciones cuando no existe la factura o el producto ingresado.
@@ -28,13 +28,14 @@ CREATE OR REPLACE PACKAGE PK_GESTION_CLIENTE AS
     Procedimiento auxiliar para crear usuarios en el sistema y no conferir directamente el privilegio
     de crear usuarios.
     Parametros de Entrada: pk_tipo_id           Tipo de identificacion del cliente al que corresponde el nuevo usuario.
-                           pk_num_id            Número de identificacion del cliente al que corresponde el nuevo usuario.
+                           pk_num_id            Nï¿½mero de identificacion del cliente al que corresponde el nuevo usuario.
     Reporta las excepciones cuando no existe la factura o el producto ingresado.
     */
     PROCEDURE PR_CREAR_USUARIO(pk_tipo_id IN CLIENTE.F_TIPO_ID%TYPE,
                                pk_num_id IN CLIENTE.F_NUMERO_ID%TYPE);
 
-END PK_GESTION_REPRESENTANTE;
+END PK_GESTION_CLIENTE;
+/
 
 /*------------------Package Body-------------------------*/
 CREATE OR REPLACE PACKAGE BODY PK_GESTION_CLIENTE AS 
@@ -44,9 +45,9 @@ CREATE OR REPLACE PACKAGE BODY PK_GESTION_CLIENTE AS
     mismo tipo y regional, si no lo hay se le asigna uno del mismo tipo y si no lo hay, se le
     asigna uno de la misma regional
     Parametros de Entrada: pk_tipo_id           Tipo de identificacion del cliente que quiere cambiar.
-                           pk_num_id            Número de identificacion del cliente que quiere cambiar.
+                           pk_num_id            Nï¿½mero de identificacion del cliente que quiere cambiar.
     Parametros de Salida:  pc_error        = 1 si no existe el cliente ingresado,
-                                             2 si no hay nigún representante que cumpla las condiciones,
+                                             2 si no hay nigï¿½n representante que cumpla las condiciones,
                                              0, en otro caso.
                            pm_error         Mensaje de error o de exito.
     Reporta las excepciones cuando no existe la factura o el producto ingresado.
@@ -112,12 +113,11 @@ CREATE OR REPLACE PACKAGE BODY PK_GESTION_CLIENTE AS
             pm_error:='Ningun representante cumple con los requisitos';
     END PR_CAMBIAR_RVENTAS;
 
-
     /*------------------------------------------------------------------------------
     Procedimiento auxiliar para crear usuarios en el sistema y no conferir directamente el privilegio
     de crear usuarios.
     Parametros de Entrada: pk_tipo_id           Tipo de identificacion del cliente al que corresponde el nuevo usuario.
-                           pk_num_id            Número de identificacion del cliente al que corresponde el nuevo usuario.
+                           pk_num_id            Nï¿½mero de identificacion del cliente al que corresponde el nuevo usuario.
     Reporta las excepciones cuando no existe la factura o el producto ingresado.
     */
     PROCEDURE PR_CREAR_USUARIO(pk_tipo_id IN CLIENTE.F_TIPO_ID%TYPE,
@@ -132,4 +132,5 @@ CREATE OR REPLACE PACKAGE BODY PK_GESTION_CLIENTE AS
         EXECUTE IMMEDIATE l_statement;
     END PR_CREAR_USUARIO;
 
-END PK_GESTION_REPRESENTANTE;
+END PK_GESTION_CLIENTE;
+/
