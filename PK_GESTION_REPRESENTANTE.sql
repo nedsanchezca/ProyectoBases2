@@ -17,10 +17,10 @@ CREATE OR REPLACE PACKAGE PK_GESTION_REPRESENTANTE AS
          Parámetros de salida:   pc_error = 1, si el proceso termina exitosamente, 0 en caso contrario
                                  pm_error = null, si el proceso termina exitosamente, mensaje de error en caso contrario         
      */
-  PR_clasificarRepresentante(pd_fecha_inicial historico_clasificacion.d_fecha_inicial%TYPE);
+
 
   /*
-  FU_GANANCIA_DIRECTA regresa las ganancias generadas de un representante de ventas en un periodo dado
+  FU_GANANCIA_DIRECTA regresa las ganancias directas generadas de un representante de ventas en un periodo dado
         Parametros de entrada: pn_idRepVentas No de identificacion del representante de ventas al que se va a consultar sus ganancias
                                 pc_tipoIdRep Tipo de identificación del representante de ventas al que se va a consultar sus ganancias
                                 pd_fecha_inicial Fecha desde la que se quiere realizar el calculo
@@ -31,23 +31,20 @@ CREATE OR REPLACE PACKAGE PK_GESTION_REPRESENTANTE AS
                                             ) RETURN NUMBER;
 
   /*
-  FU_GANANCIA_HIJOS regresa las ganancias generadas por los representantes de ventas inferiores al representante de ventas ingresado
-        Parametros de entrada: pn_idRepVentas No de identificacion del representante de ventas al que se va a consultar la ganancias de los inferiores
-                                pc_tipoIdRep Tipo de identificación del representante de ventas al que se va a consultar sus ganancias de los inferiores
+  FU_GANANCIA regresa las ganancias generadas de un representante de ventas en un periodo dado, esta es una funcion recursiva
+        Parametros de entrada: pn_idRepVentas No de identificacion del representante de ventas al que se va a consultar laS ganancias
+                                pc_tipoIdRep Tipo de identificación del representante de ventas al que se va a consultar sus ganancias
                                 pd_fecha_inicial Fecha desde la que se quiere realizar el calculo
   */
-  FUNCTION FU_GANANCIA_HIJOS(
-                              pn_idRepVentas REP_VENTAS.F_NUMERO_ID%TYPE,
-                              pc_tipoIdRep REP_VENTAS.F_TIPO_ID%TYPE,
-                              pd_fecha_inicial historico_clasificacion.d_fecha_inicial%TYPE
-                              ) RETURN NUMBER;
+    FUNCTION FU_GANANCIA(pn_idRepVentas REP_VENTAS.F_NUMERO_ID%TYPE,
+                        pc_tipoIdRep REP_VENTAS.F_TIPO_ID%TYPE,
+                        pd_fecha_inicial historico_clasificacion.d_fecha_inicial%TYPE
+                        ) RETURN NUMBER;
+
 
 
 END PK_GESTION_REPRESENTANTE;
-
-
-
-
+/
 /*------------------Package Body-------------------------*/
 CREATE OR REPLACE PACKAGE BODY PK_GESTION_REPRESENTANTE AS 
 
@@ -87,46 +84,47 @@ BEGIN
 ---SE DEBE RETORNAR
 FOR dataRep IN c_totalVentas LOOP
     lc_gananciaAcumulada:=(dataRep.ventas*(dataRep.V_COMISION/100));
-    lc_gananciaAcumulada:=lc_gananciaAcumulada+(FU_GANANCIA_HIJOS(pn_idRepVentas,pc_tipoIdRep,pd_fecha_inicial)*(dataRep.V_COMISION/100));
 END LOOP;
 RETURN lc_gananciaAcumulada;
 END FU_GANANCIA_DIRECTA;
 
 
+
   /*
-  FU_GANANCIA_HIJOS regresa las ganancias generadas por los representantes de ventas inferiores al representante de ventas ingresado
-        Parametros de entrada: pn_idRepVentas No de identificacion del representante de ventas al que se va a consultar la ganancias de los inferiores
-                                pc_tipoIdRep Tipo de identificación del representante de ventas al que se va a consultar sus ganancias de los inferiores
+  FU_GANANCIA regresa las ganancias generadas de un representante de ventas en un periodo dado
+        Parametros de entrada: pn_idRepVentas No de identificacion del representante de ventas al que se va a consultar laS ganancias
+                                pc_tipoIdRep Tipo de identificación del representante de ventas al que se va a consultar sus ganancias
                                 pd_fecha_inicial Fecha desde la que se quiere realizar el calculo
   */
-  FUNCTION FU_GANANCIA_HIJOS(
-                                            pn_idRepVentas REP_VENTAS.F_NUMERO_ID%TYPE,
+    FUNCTION FU_GANANCIA(     pn_idRepVentas REP_VENTAS.F_NUMERO_ID%TYPE,
                                             pc_tipoIdRep REP_VENTAS.F_TIPO_ID%TYPE,
                                             pd_fecha_inicial historico_clasificacion.d_fecha_inicial%TYPE
                                             ) RETURN NUMBER
-AS
----DECLARO LO QUE VOY A RETORNAR
-lc_gananciaAcumulada NUMBER:=0;
--- Declaración de variables
--- Declaración de Cursores
----Totaliza las ventas directas de un representante
-    CURSOR c_repHijos IS
-        SELECT F_NUMERO_ID,F_TIPO_ID 
-        FROM REP_VENTAS RP
-        WHERE   RP.F_ID_REP_CAPATADOR=pn_idRepVentas AND
-                RP.F_TIPO_ID_REP_CAPATADOR=pc_tipoIdRep;
-                --d_fecha >= TO_DATE(pd_fecha_inicial, 'DD.MM.YYYY') AND d_fecha <= SYSDATE
-BEGIN
----SE DEBE RETORNAR
-FOR dataRep IN c_repHijos LOOP
-    IF(c_repHijos%NOTFOUND) THEN
-        RETURN lc_gananciaAcumulada;
-    ELSE
-        lc_gananciaAcumulada:=lc_gananciaAcumulada+FU_GANANCIA_DIRECTA(dataRep.F_NUMERO_ID, dataRep.F_TIPO_ID,pd_fecha_inicial);
-    END IF;
-END LOOP;
-RETURN lc_gananciaAcumulada;
-END FU_GANANCIA_HIJOS;
-/
+    AS
+    ---DECLARO LO QUE VOY A RETORNAR
+    lc_gananciaAcumulada NUMBER:=0;
+    -- Declaración de variables
+    -- Declaración de Cursores
+    ---Totaliza las ventas directas de un representante
+        CURSOR c_repHijos IS
+            SELECT F_NUMERO_ID,F_TIPO_ID 
+            FROM REP_VENTAS RP
+            WHERE   RP.F_ID_REP_CAPATADOR=pn_idRepVentas AND
+                    RP.F_TIPO_ID_REP_CAPATADOR=pc_tipoIdRep;
+
+    BEGIN
+    ---SE DEBE RETORNAR
+    lc_gananciaAcumulada:=lc_gananciaAcumulada+FU_GANANCIA_DIRECTA(pn_idRepVentas, pc_tipoIdRep,pd_fecha_inicial);
+    FOR dataRep IN c_repHijos LOOP
+        IF(c_repHijos%NOTFOUND) THEN
+            RETURN lc_gananciaAcumulada;
+        ELSE
+            lc_gananciaAcumulada:=lc_gananciaAcumulada+(FU_GANANCIA(dataRep.F_NUMERO_ID,dataRep.F_TIPO_ID,pd_fecha_inicial));
+        END IF;
+    END LOOP;
+    RETURN lc_gananciaAcumulada;
+    END FU_GANANCIA;
+
 
 END PK_GESTION_REPRESENTANTE;
+/
