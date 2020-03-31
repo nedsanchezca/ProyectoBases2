@@ -46,6 +46,7 @@ public class clienteSeleccionado extends HttpServlet {
             request.getSession().setAttribute("pedido_actual",id);
             response.sendRedirect("/Multinivel/formulario_Venta.jsp");
         }else{
+            request.getSession().setAttribute("anterior", "formulario_Venta.jsp");
             request.getSession().setAttribute("mensajeError", ex);
             response.sendRedirect("/Multinivel/pagina_Error.jsp");
         }

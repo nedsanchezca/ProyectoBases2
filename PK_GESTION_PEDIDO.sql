@@ -55,7 +55,7 @@ CREATE OR REPLACE PACKAGE BODY PK_GESTION_PEDIDO AS
                         FROM DETALLE_PEDIDO
                         WHERE F_N_FACTURA=pk_id_pedido;
     BEGIN
-        
+        SET TRANSACTION NAME 'T_AGREGAR_PRODUCTO';
         FOR rc_item_maximo IN c_item_maximo LOOP
             lv_contador_detalles := rc_item_maximo.maximo;
         END LOOP;
@@ -99,6 +99,7 @@ CREATE OR REPLACE PACKAGE BODY PK_GESTION_PEDIDO AS
                         FROM DETALLE_PEDIDO
                         WHERE F_N_FACTURA=pk_id_pedido;
     BEGIN
+        SET TRANSACTION NAME 'T_BORRAR_PRODUCTO';
         DELETE DETALLE_PEDIDO WHERE F_N_FACTURA = pk_id_pedido AND F_ID_INVENTARIO=pk_id_inventario;
         FOR rc_item IN c_items LOOP
             lv_contador_detalles := lv_contador_detalles+1;
