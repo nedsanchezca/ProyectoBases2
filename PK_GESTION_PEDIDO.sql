@@ -1,7 +1,7 @@
 /*-----------------------------------------------------------------------------------
   Proyecto   : Ventas multinivel NATAME. Curso BDII
-  Descripcion: Funciones y procedimientos asociados al módulo de Gestión de pedidos.
-  Autores    : Nestor Sanchez, Jairo Andrés Romero, Gabriela Ladino, Juan Diego Avila, Cristian Bernal.
+  Descripcion: Funciones y procedimientos asociados al mï¿½dulo de Gestiï¿½n de pedidos.
+  Autores    : Nestor Sanchez, Jairo Andrï¿½s Romero, Gabriela Ladino, Juan Diego Avila, Cristian Bernal.
 --------------------------------------------------------------------------------------*/
 
 /*------------------Package Header-------------------------*/
@@ -10,10 +10,10 @@ CREATE OR REPLACE PACKAGE PK_GESTION_PEDIDO AS
     /*------------------------------------------------------------------------------
     Procedimiento para agregar un producto en el inventario y una cantidad a una factura 
     determinada, se asegura de que los items de la factura sean secuenciales.
-    Parametros de Entrada: pk_id_inventario     Código del producto para ubicarlo en el inventario.
+    Parametros de Entrada: pk_id_inventario     Cï¿½digo del producto para ubicarlo en el inventario.
                            pv_cantidad          Cantidad del producto que se desea en la factura.
-                           pk_id_pedido         Número del pedido donde se van a agregar los productos.
-    Reporta las excepciones cuando falla la inserción o cuando no el producto o la factura de ventas.
+                           pk_id_pedido         Nï¿½mero del pedido donde se van a agregar los productos.
+    Reporta las excepciones cuando falla la inserciï¿½n o cuando no el producto o la factura de ventas.
     */
     PROCEDURE PR_AGREGAR_PRODUCTO(pk_id_inventario IN INVENTARIO.K_ID%TYPE,
                                   pv_cantidad IN DETALLE_PEDIDO.V_CANTIDAD%TYPE,
@@ -22,12 +22,21 @@ CREATE OR REPLACE PACKAGE PK_GESTION_PEDIDO AS
     /*------------------------------------------------------------------------------
     Procedimiento para borrar un producto de una factura determinada, se asegura de que los items 
     de la factura sean secuenciales.
-    Parametros de Entrada: pk_id_inventario     Código del producto para ubicarlo en la factura.
-                           pk_id_pedido         Número del pedido donde se va a borrar el productos.
+    Parametros de Entrada: pk_id_inventario     Cï¿½digo del producto para ubicarlo en la factura.
+                           pk_id_pedido         Nï¿½mero del pedido donde se va a borrar el productos.
     Reporta las excepciones cuando no existe la factura o el producto ingresado.
     */
     PROCEDURE PR_BORRAR_PRODUCTO(pk_id_inventario IN INVENTARIO.K_ID%TYPE,
                                  pk_id_pedido IN PEDIDO.K_N_FACTURA%TYPE);
+    
+    /*
+         FU_totalizarCarrito 
+         Totaliza el valor del pedido dada un nÃºmero de factura
+         ParÃ¡metros de entrada: pk_n_factura
+         RETORNA: l_total El valor junto con el iva del valor para el pedido
+         EXCEPTION: Si no encuentra la factura
+     */
+    FUNCTION FU_totalizarCarrito(pk_n_factura pedido.k_n_factura%TYPE) RETURN NUMBER
 
 END PK_GESTION_PEDIDO;
 /
@@ -38,10 +47,10 @@ CREATE OR REPLACE PACKAGE BODY PK_GESTION_PEDIDO AS
     /*------------------------------------------------------------------------------
     Procedimiento para agregar un producto en el inventario y una cantidad a una factura 
     determinada, se asegura de que los items de la factura sean secuenciales.
-    Parametros de Entrada: pk_id_inventario     Código del producto para ubicarlo en el inventario.
+    Parametros de Entrada: pk_id_inventario     Cï¿½digo del producto para ubicarlo en el inventario.
                            pv_cantidad          Cantidad del producto que se desea en la factura.
-                           pk_id_pedido         Número del pedido donde se van a agregar los productos.
-    Reporta las excepciones cuando falla la inserción o cuando no el producto o la factura de ventas.
+                           pk_id_pedido         Nï¿½mero del pedido donde se van a agregar los productos.
+    Reporta las excepciones cuando falla la inserciï¿½n o cuando no el producto o la factura de ventas.
     */
     PROCEDURE PR_AGREGAR_PRODUCTO(pk_id_inventario IN INVENTARIO.K_ID%TYPE,
                                   pv_cantidad IN DETALLE_PEDIDO.V_CANTIDAD%TYPE,
@@ -87,8 +96,8 @@ CREATE OR REPLACE PACKAGE BODY PK_GESTION_PEDIDO AS
     /*------------------------------------------------------------------------------
     Procedimiento para borrar un producto de una factura determinada, se asegura de que los items 
     de la factura sean secuenciales.
-    Parametros de Entrada: pk_id_inventario     Código del producto para ubicarlo en la factura.
-                           pk_id_pedido         Número del pedido donde se va a borrar el productos.
+    Parametros de Entrada: pk_id_inventario     Cï¿½digo del producto para ubicarlo en la factura.
+                           pk_id_pedido         Nï¿½mero del pedido donde se va a borrar el productos.
     Reporta las excepciones cuando no existe la factura o el producto ingresado.
     */
     PROCEDURE PR_BORRAR_PRODUCTO(pk_id_inventario IN INVENTARIO.K_ID%TYPE,
@@ -116,6 +125,60 @@ CREATE OR REPLACE PACKAGE BODY PK_GESTION_PEDIDO AS
                 RAISE_APPLICATION_ERROR(-20002,'Producto no existe');
             END IF;
     END PR_BORRAR_PRODUCTO;
+
+    /*
+         FU_totalizarCarrito 
+         Totaliza el valor del pedido dada un nÃºmero de factura
+         ParÃ¡metros de entrada: pk_n_factura
+         RETORNA: l_total El valor junto con el iva del valor para el pedido
+         EXCEPTION: Si no encuentra la factura
+     */
+    CREATE OR REPLACE FUNCTION FU_totalizarCarrito(pk_n_factura pedido.k_n_factura%TYPE) RETURN NUMBER
+    AS
+    -- DeclaraciÃ³n de variables
+        l_total NUMBER;
+        l_aux NUMBER := 0;
+        l_valor_cantidad_invalido EXCEPTION;
+        l_subTotal NUMBER;
+        l_IVA NUMBER;
+
+        /* Cursor para devolver el precio del pedido con IVA */
+        CURSOR c_precioPedido IS
+            SELECT v_precio, v_iva, v_cantidad
+            FROM pedido p, persona pe, cliente cl, detalle_pedido dp, producto pr, inventario i, categoria c
+            WHERE   pe.k_numero_id = cl.f_numero_id AND
+                    cl.f_numero_id = p.f_numero_id AND
+                    pe.k_tipo_id = cl.f_tipo_id AND
+                    p.k_n_factura = dp.f_n_factura AND
+                    dp.f_id_inventario = i.k_id AND
+                    i.f_codigo_producto = pr.k_codigo_producto AND
+                    c.k_id = pr.f_id AND
+                    p.k_n_factura = pk_n_factura;
+        lc_precioPedido c_precioPedido%ROWTYPE;
+    BEGIN
+        /* Cursor para devolver el precio del pedido con IVA */
+        OPEN c_precioPedido;
+        LOOP
+            FETCH c_precioPedido INTO lc_precioPedido;
+            EXIT WHEN c_precioPedido%NOTFOUND;
+            IF lc_precioPedido.v_precio < 0 OR lc_precioPedido.v_cantidad < 0 THEN
+                RAISE l_valor_cantidad_invalido;
+            ELSE
+                l_subTotal := (lc_precioPedido.v_precio*lc_precioPedido.v_cantidad);
+                l_IVA := l_subTotal*(lc_precioPedido.v_iva/100);
+                l_total := l_aux + (l_subTotal + l_IVA);
+                l_aux := l_total;
+            END IF;
+        END LOOP;
+        CLOSE c_precioPedido;
+        RETURN l_total;
+    EXCEPTION
+        WHEN l_valor_cantidad_invalido THEN
+            RAISE_APPLICATION_ERROR(-20111, 'Valor o cantidad invalida (nÃºmeros negativos)');
+        WHEN NO_DATA_FOUND THEN
+            RAISE_APPLICATION_ERROR(-20112, 'Registro no encontrado');
+    END FU_totalizarCarrito;
+
 
 END PK_GESTION_PEDIDO;
 /
