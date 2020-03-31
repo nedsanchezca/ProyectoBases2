@@ -65,7 +65,7 @@ public class registroRepVentas extends HttpServlet {
             request.getSession().setAttribute("rep", rep);
             response.sendRedirect("/Multinivel/formulario_Nuevo_Rep.html");
         }else{
-            request.getSession().setAttribute("anterior", "formulario_Nuevo_Rep.jsp");
+            request.getSession().setAttribute("anterior", "formulario_Nuevo_Rep.html");
             request.getSession().setAttribute("mensajeError", ex);
             response.sendRedirect("/Multinivel/pagina_Error.jsp");
         }

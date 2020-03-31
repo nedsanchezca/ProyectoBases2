@@ -62,9 +62,9 @@ public class registroCliente extends HttpServlet {
         
         if(ex.getMensaje()==null){
             request.getSession().setAttribute("rep", rep);
-            response.sendRedirect("/Multinivel/formulario_Nuevo_Rep.html");
+            response.sendRedirect("/Multinivel/formulario_Cliente.html");
         }else{
-            request.getSession().setAttribute("anterior", "formulario_Cliente.jsp");
+            request.getSession().setAttribute("anterior", "formulario_Cliente.html");
             request.getSession().setAttribute("mensajeError", ex);
             response.sendRedirect("/Multinivel/pagina_Error.jsp");
         }

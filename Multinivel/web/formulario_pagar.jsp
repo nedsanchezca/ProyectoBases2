@@ -56,7 +56,7 @@
             <img src="images/restriction.jpg">
             <h3 class="text-uppercase text-center">Formulario para el pago en PSE </h3>
             <p class="lead text-center">Diligencie la siguiente información para hacer el pago en PSE</p>
-            <form action=calificarRepVentas class="">
+            <form action=pagoPedido class="">
                   <div class="form-group">
                     <label for="V_VALORACION">Número de la cuenta</label>
                     <%out.println("<input type=\"hidden\" name = \"pag\" value = \""+request.getParameter("pag")+"\">");%>

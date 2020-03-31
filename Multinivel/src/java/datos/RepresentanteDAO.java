@@ -80,7 +80,7 @@ public class RepresentanteDAO {
             strSQL = "INSERT INTO HISTORICO_CLASIFICACION "
                    + "VALUES("
                    + "NATAME.PEDIDO_SEQ.NEXTVAL,"
-                   + "SYSDATE,SYSDATE + numtoyminterval(1, 'MONTH')-1,"
+                   + "SYSDATE,SYSDATE + 30,"
                    + "?,?,1)";
             prepStmt = conexion.prepareStatement(strSQL);
             prepStmt.setString(1, representante.getIdRep());
@@ -105,7 +105,6 @@ public class RepresentanteDAO {
         } catch (SQLException e) {
             locator.rollback();
             mensaje.setMensaje(e.getLocalizedMessage());
-            System.out.println(e);
         } finally {
             locator = null;
             return mensaje;
@@ -217,9 +216,10 @@ public class RepresentanteDAO {
             caStatement.setString(2, rep.getIdRep());
             caStatement.setString(3, Character.toString(rep.getTipoId()));
             caStatement.execute();
-            return caStatement.getDouble(prStatement);
+            return caStatement.getDouble(1);
         } catch (SQLException ex) {
             error.setMensaje(ex.getLocalizedMessage());
+            System.out.println("dfs"+ex.getLocalizedMessage());
             return -1;
         } 
     }

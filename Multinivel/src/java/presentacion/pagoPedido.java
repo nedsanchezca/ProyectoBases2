@@ -40,7 +40,7 @@ public class pagoPedido extends HttpServlet {
         pedDAO.setLocator((ServiceLocator)request.getSession().getAttribute("conexion"));
         double monto = pedDAO.totalPedido(Integer.parseInt(request.getParameter("pag")), new Mensaje());
         pedDAO.setLocator((ServiceLocator)request.getSession().getAttribute("conexion"));
-        pedDAO.pagarPedido(Integer.parseInt(request.getParameter("pag")),request.getParameter("N_COMENTARIO"),monto);
+        pedDAO.pagarPedido(Integer.parseInt(request.getParameter("pag")),Integer.parseInt(request.getParameter("N_COMENTARIO")),monto);
         pedDAO.setLocator((ServiceLocator)request.getSession().getAttribute("conexion"));
         pedDAO.generarFactura(Integer.parseInt(request.getParameter("pag")), new Mensaje());
         response.sendRedirect("/Multinivel/paginaEstadoPedido.jsp");

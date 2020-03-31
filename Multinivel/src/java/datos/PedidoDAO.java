@@ -298,15 +298,15 @@ public class PedidoDAO {
         return leido;
     }
     
-    public Mensaje pagarPedido(int pedido, String numCuenta, double monto){
+    public Mensaje pagarPedido(int pedido, int numCuenta, double monto){
         Mensaje error = new Mensaje();
         try {
             //Tomar la conexión
             Connection conexion = locator.getConexion();
             
-            String prStatement = "{call PK_GESTION_PEDIDO.PR_PAGOBANCO(?,'',?)}";
+            String prStatement = "{call BDBANCO.PR_PAGOBANCO(?,2,?)}";
             CallableStatement caStatement = conexion.prepareCall(prStatement);
-            caStatement.setString(1, numCuenta);
+            caStatement.setInt(1, numCuenta);
             caStatement.setDouble(2, monto);
             caStatement.execute();
             
