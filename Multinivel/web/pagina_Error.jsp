@@ -1,9 +1,8 @@
-<meta http-equiv='refresh' content='3;URL=login.html'>
-
 <%@page import="util.Mensaje"%>
 <%@page import="util.ServiceLocator"%>
 <%@page import="presentacion.login"%>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
+<%out.print("<meta http-equiv='refresh' content='5;URL="+request.getSession().getAttribute("anterior")+"'>");%>
 <!DOCTYPE html>
 <html lang="en">
 
@@ -41,7 +40,9 @@
     <center>
         <%
             String mensaje =  request.getSession().getAttribute("mensajeError").toString();
-            out.println(mensaje);
+            out.println("<p>"+mensaje+"</p>");
+            out.println("<p>"+"-----"+"</p>");
+            out.println("<p>"+"Será redireccionado por favor espere"+"</p>");            
         %>
     </center>
 
