@@ -1,3 +1,6 @@
+CREATE OR REPLACE DIRECTORY dir_archivos
+  AS  'C:\';
+
 /*-----------------------------------------------------------------------------------
   Proyecto   : Ventas multinivel NATAME. Curso BDII
   Descripcion: Funciones y procedimientos asociados al m�dulo de Gesti�n de pedidos.
