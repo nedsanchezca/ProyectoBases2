@@ -196,9 +196,11 @@ public class RepresentanteDAO {
             caStatement.registerOutParameter(3, Types.INTEGER);
             caStatement.registerOutParameter(4, Types.VARCHAR);
             caStatement.execute();
-            error.setMensaje(caStatement.getInt(3)+" "+caStatement.getString(4));
+            error.setMensaje("Cambio exitoso"+caStatement.getInt(3)+" "+caStatement.getString(4));
+            locator.commit();
             return error;
         } catch (SQLException ex) {
+            locator.rollback();
             error.setMensaje(ex.getLocalizedMessage());
         } finally{
             return error;

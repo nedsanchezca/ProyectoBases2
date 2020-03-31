@@ -92,7 +92,7 @@
                         </div>
                     </div>
                     <div class="profile-userbuttons">
-                        <a href="#aquivalacosa" class="btn btn-success btn-sm">Cambiar Representante</a>
+                        <a href=cambiarRepVentas class="btn btn-success btn-sm">Cambiar Representante</a>
                     </div>
                     <div class="profile-usermenu">
                         <ul class="nav">
