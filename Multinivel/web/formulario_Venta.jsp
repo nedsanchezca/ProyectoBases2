@@ -105,12 +105,12 @@
             </thead>
             <tbody>
                 <%
+                    PedidoDAO objPedidoDAO = new PedidoDAO();
                     if(request.getParameter("terminar")!=null){
                         request.getSession().setAttribute("pedido_actual", 0);
                         request.getSession().setAttribute("cliente_actual", null);
                     }
                     if((Integer)request.getSession().getAttribute("pedido_actual")!=0){
-                        PedidoDAO objPedidoDAO = new PedidoDAO();
                         objPedidoDAO.setLocator((ServiceLocator)request.getSession().getAttribute("conexion"));
                         InventarioDAO objInventarioDAO = new InventarioDAO();
                         Pedido pedido = objPedidoDAO.obtenerPedidos((Integer)request.getSession().getAttribute("pedido_actual"), new Mensaje());
@@ -123,7 +123,7 @@
                             out.println("<td>" + deta.getProducto() + "</td>");
                             out.println("<td>" + prod.getNombreProducto() + "</td>");
                             out.println("<td>" + deta.getCantidad() + "</td>");
-                            out.println("<td>" + deta.getCantidad() * prod.getPrecio() + "</td>");
+                            out.println("<td>" + (deta.getCantidad() * prod.getPrecio()*prod.getIva()/100) + "</td>");
                             out.println("<td>" + prod.getIva() + "</td>");
                             out.println("<td>" + deta.getCantidad() * prod.getPrecio() * (1 + prod.getIva() / 100) + "</td>");
                             out.println("<td><form action = borradoProducto>");
@@ -138,7 +138,14 @@
             </tbody>
             <tfoot>
             <th scope="col">Total</th>
-            <th scope="col"> $ 0.00</th>
+            <th scope="col"><%
+                if((Integer)request.getSession().getAttribute("pedido_actual")!=0){
+                    objPedidoDAO.setLocator((ServiceLocator)request.getSession().getAttribute("conexion"));
+                    out.println(objPedidoDAO.totalPedido((Integer)request.getSession().getAttribute("pedido_actual"), new Mensaje()));
+                }else{
+                    out.println("0.00");
+                }
+                %></th>
         </tfoot>
     </table>
     <form action=clienteSeleccionado>

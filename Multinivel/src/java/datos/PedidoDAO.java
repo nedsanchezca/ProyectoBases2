@@ -298,12 +298,19 @@ public class PedidoDAO {
         return leido;
     }
     
-    public Mensaje pagarPedido(int pedido){
+    public Mensaje pagarPedido(int pedido, String numCuenta, double monto){
         Mensaje error = new Mensaje();
         try {
             //Tomar la conexión
             Connection conexion = locator.getConexion();
-            String prStatement = "UPDATE PEDIDO SET I_ESTADO = \'P\' WHERE K_N_FACTURA=?";
+            
+            String prStatement = "{call PK_GESTION_PEDIDO.PR_PAGOBANCO(?,'',?)}";
+            CallableStatement caStatement = conexion.prepareCall(prStatement);
+            caStatement.setString(1, numCuenta);
+            caStatement.setDouble(2, monto);
+            caStatement.execute();
+            
+            prStatement = "UPDATE PEDIDO SET I_ESTADO = \'P\' WHERE K_N_FACTURA=?";
             PreparedStatement prepStmt = conexion.prepareStatement(prStatement);
             prepStmt.setInt(1, pedido); 
             prepStmt.executeUpdate();
@@ -320,22 +327,34 @@ public class PedidoDAO {
         }
     }
     
-    public int totalPedido(int pedido, Mensaje exe){
+    public double totalPedido(int pedido, Mensaje exe){
         try {
             //Tomar la conexión
             Connection conexion = locator.getConexion();
             String prStatement = "{? = call PK_GESTION_PEDIDO.FU_TOTALIZARCARRITO(?) }";
             CallableStatement caStatement = conexion.prepareCall(prStatement);
-            caStatement.registerOutParameter(1,Types.INTEGER);
+            caStatement.registerOutParameter(1,Types.DOUBLE);
             caStatement.setInt(2,pedido);
             caStatement.execute();
-            return caStatement.getInt(1);
+            return caStatement.getDouble(1);
         } catch (SQLException ex) {
             exe.setMensaje(ex.getLocalizedMessage());
             return -1;
         }
     }
-
+    
+    public void generarFactura(int pedido, Mensaje exe){
+        try {
+            //Tomar la conexión
+            Connection conexion = locator.getConexion();
+            String prStatement = "{call PK_GESTION_PEDIDO.PR_GENERAR_FACTURA(?)}";
+            CallableStatement caStatement = conexion.prepareCall(prStatement);
+            caStatement.setInt(1,pedido);
+            caStatement.execute();
+        } catch (SQLException ex) {
+            exe.setMensaje(ex.getLocalizedMessage());
+        }
+    }
     
     public void setLocator(ServiceLocator locator){
         this.locator = locator;

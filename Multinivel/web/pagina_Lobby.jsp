@@ -4,6 +4,8 @@
     Author     : Nestor
 --%>
 
+<%@page import="util.ServiceLocator"%>
+<%@page import="datos.RepresentanteDAO"%>
 <%@page import="negocio.Clasificacion"%>
 <%@page import="negocio.Cliente"%>
 <%@page import="negocio.Representante"%>
@@ -123,14 +125,20 @@
                         <div class="card">
                             <div class="card-body">
                                 <h5 class="card-title">Cliente con mas pedidos</h5>
-                                <p class="card-text">El cliente con mas pedidos</p>
+                                <p class="card-text">Cristian Bernal</p>
                                 <p class="card-text"><small class="text-muted">Last updated 3 mins ago</small></p>
                             </div>
                         </div>
                         <div class="card">
                             <div class="card-body">
                                 <h5 class="card-title">Venta acumulada</h5>
-                                <p class="card-text">Hasta el momento llevamos valiendo muchas hectareas</p>
+                                <p class="card-text"><%
+                                    if(rep.getIdRep()!=null){
+                                        RepresentanteDAO repDAO = new RepresentanteDAO();
+                                        repDAO.setLocator((ServiceLocator)request.getSession().getAttribute("conexion"));
+                                        out.println("$"+repDAO.gananciaRepresentante(rep));
+                                    }
+                                    %></p>
                                 <p class="card-text"><small class="text-muted">Last updated 3 mins ago</small></p>
                             </div>
                         </div>

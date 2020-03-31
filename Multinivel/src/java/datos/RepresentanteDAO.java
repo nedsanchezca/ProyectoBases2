@@ -206,6 +206,24 @@ public class RepresentanteDAO {
         }
     }
     
+    public double gananciaRepresentante(Representante rep){
+        Mensaje error = new Mensaje();
+        try {
+            //Tomar la conexión
+            Connection conexion = locator.getConexion();
+            String prStatement = "{? = call PK_GESTION_REPRESENTANTE.FU_GANANCIA(?, ?, ADD_MONTHS(sysdate,-1)) }";
+            CallableStatement caStatement = conexion.prepareCall(prStatement);
+            caStatement.registerOutParameter(1, Types.DOUBLE);
+            caStatement.setString(2, rep.getIdRep());
+            caStatement.setString(3, Character.toString(rep.getTipoId()));
+            caStatement.execute();
+            return caStatement.getDouble(prStatement);
+        } catch (SQLException ex) {
+            error.setMensaje(ex.getLocalizedMessage());
+            return -1;
+        } 
+    }
+    
     public void setLocator(ServiceLocator locator){
         this.locator = locator;
     }

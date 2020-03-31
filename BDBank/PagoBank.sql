@@ -19,7 +19,7 @@ AS
         WHERE C.FK_CLIENTE = CE.K_CLIENTE;
     lc_pagoBanco c_pagoBanco%ROWTYPE;
 BEGIN
-    SET TRANSACTION NAME 'PAGO_DE_BANCO'
+    SET TRANSACTION NAME 'PAGO_DE_BANCO';
     OPEN c_pagoBanco;
     LOOP
         FETCH c_pagoBanco INTO lc_pagoBanco;
@@ -32,8 +32,10 @@ BEGIN
     IF lc_pagoBanco.K_CUENTA <> pfk_cuentaorigen THEN
         RAISE l_noDatos;
     END IF;
+    COMMIT;
 EXCEPTION
     WHEN l_noDatos THEN
+        ROLLBACK;
         RAISE_APPLICATION_ERROR(-20113,'No se encontró una cuenta asociada al banco');
 END PR_pagoBanco;
 /
