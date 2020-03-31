@@ -44,7 +44,8 @@
                         <a class="nav-link" href = "paginaEstadoPedido.jsp">Estado pedido</a>
                     </li>
                     <li class="nav-item">
-                        <form action=logout><input type="submit" class="nav-link" value="Salir"></form>
+                        <%%>
+                        <form action=pagoPedido><input type="submit" class="nav-link" value="Salir"></form>
                     </li>
                 </ul>
             </div>
@@ -58,6 +59,7 @@
             <form action=calificarRepVentas class="">
                   <div class="form-group">
                     <label for="V_VALORACION">Número de la cuenta</label>
+                    <%out.println("<input type=\"hidden\" name = \"pag\" value = \""+request.getParameter("pag")+"\">");%>
                     <input class="form-control" name="N_COMENTARIO" type="text" placeholder="Numero cuenta">
                 </div>
                 <button class="btn btn-primary">Registrar</button>

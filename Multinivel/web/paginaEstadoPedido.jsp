@@ -124,7 +124,7 @@
                         out.println("</form>");
                         out.println("</td>");
                         out.println("<td>");
-                        out.println("<form action=pagoPedido>");
+                        out.println("<form action=formulario_pagar.jsp>");
                         out.println("<input type=\"hidden\" name=\"pag\" value=\"" + ped.getIdFactura() + "\">");
                         out.println("<input type=\"image\" value=\"Pagar\" class=\"btn btn-dark\">");
                         out.println("</form>");
