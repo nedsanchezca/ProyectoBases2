@@ -21,13 +21,33 @@ AS
 
     -- Cursor para consultar a los representantes a cargo en el resumen
     CURSOR c_captados IS
-        SELECT /*N_NOMBRE, N_APELLIDO,*/ RV.F_NUMERO_ID
-        FROM PERSONA P, REP_VENTAS RV, PEDIDO PE
-        WHERE   p.k_numero_id = rv.f_numero_id AND
-                rv.f_numero_id = rv.f_id_rep_capatador AND
-                d_fecha >= TO_DATE('12.08.2019', 'DD.MM.YYYY') AND d_fecha <= SYSDATE
-        GROUP BY RV.F_NUMERO_ID/*, N_NOMBRE, N_APELLIDO*/;
+        SELECT F_NUMERO_ID, N_NOMBRE
+        FROM REP_VENTAS RP, PERSONA P
+        WHERE   RP.F_ID_REP_CAPATADOR=P.K_NUMERO_ID AND
+                RP.F_TIPO_ID_REP_CAPATADOR=P.K_TIPO_ID;
     lc_captados c_captados%ROWTYPE;
+
+    -- Cursor para tener el promedio de calificaciones de cada representante
+    CURSOR c_promedioCalificacion IS
+        SELECT (SUM(CL.V_VALORACION)) valoracion, (COUNT(C.F_ID_REP_VENTAS)) cantidadClientes, F_ID_REP_VENTAS, N_NOMBRE
+        FROM CLIENTE C, REP_VENTAS RP, PEDIDO P, CALIFICACION CL, HISTORICO_CLASIFICACION HC, PERSONA PE
+        WHERE   C.F_ID_REP_VENTAS = RP.F_NUMERO_ID AND 
+                PE.K_NUMERO_ID = RP.F_NUMERO_ID AND
+                C.F_TIPO_ID=RP.F_TIPO_ID AND
+                P.F_NUMERO_ID=C.F_NUMERO_ID AND 
+                P.F_TIPO_ID=C.F_TIPO_ID AND
+                CL.F_N_FACTURA = P.K_N_FACTURA AND 
+                HC.F_NUM_ID=RP.F_NUMERO_ID AND
+                d_fecha >= TO_DATE('12.08.2019', 'DD.MM.YYYY') AND d_fecha <= SYSDATE
+        GROUP BY F_ID_REP_VENTAS, N_NOMBRE;
+    lc_promedio c_promedioCalificacion%ROWTYPE;
+
+    -- Cursor para redefinir la nueva clasificación de cada representante
+    CURSOR c_nuevaClasificacion IS
+        SELECT
+        FROM
+        WHERE
+    lc_nuevaClasificacion c_nuevaClasificacion%ROWTYPE;
 
 BEGIN
     DBMS_OUTPUT.PUT_LINE('RESUMEN PERIODICO DE VENTAS');
@@ -42,6 +62,28 @@ BEGIN
         DBMS_OUTPUT.PUT_LINE(lc_totalVentas.total||' - '||lc_totalVentas.N_NOMBRE||' '||lc_totalVentas.N_APELLIDO);
     END LOOP;
     CLOSE c_totalVentas;
+
+    -- Cursor para consultar los representantes que tiene a cargo un representante de ventas
+    OPEN c_captados;
+    DBMS_OUTPUT.PUT_LINE('Captados | Nombre Representante');
+    DBMS_OUTPUT.PUT_LINE('-----------------------------------');
+    LOOP
+        FETCH c_captados INTO lc_captados;
+        EXIT WHEN c_captados%NOTFOUND;
+        DBMS_OUTPUT.PUT_LINE(lc_captados.F_NUMERO_ID||' - '||lc_captados.N_NOMBRE);
+    END LOOP;
+    CLOSE c_captados;
+
+    -- Cursor para tener el promedio de calificaciones de cada representante
+    OPEN c_promedioCalificacion;
+    DBMS_OUTPUT.PUT_LINE('Puntuacion | Nombre Representante');
+    DBMS_OUTPUT.PUT_LINE('-----------------------------------');
+    LOOP
+        FETCH c_promedioCalificacion INTO lc_promedio;
+        EXIT WHEN c_promedioCalificacion%NOTFOUND;
+        DBMS_OUTPUT.PUT_LINE(lc_promedio.valoracion/lc_promedio.cantidadClientes||' - '||lc_promedio.N_NOMBRE);
+    END LOOP;
+    CLOSE c_promedioCalificacion;
 END PR_clasificarRepresentante;
 /
 
