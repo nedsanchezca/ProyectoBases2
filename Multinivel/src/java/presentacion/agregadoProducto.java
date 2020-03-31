@@ -56,6 +56,7 @@ public class agregadoProducto extends HttpServlet {
             request.getSession().setAttribute("pedido_actual", nPedido);
             response.sendRedirect("/Multinivel/formulario_Venta.jsp");
         }else{
+            request.getSession().setAttribute("anterior", "formulario_Venta.jsp");
             request.getSession().setAttribute("mensajeError", ex);
             response.sendRedirect("/Multinivel/pagina_Error.jsp");
         }

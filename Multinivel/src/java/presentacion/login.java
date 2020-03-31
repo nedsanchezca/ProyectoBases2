@@ -84,6 +84,7 @@ public class login extends HttpServlet {
             request.getSession().setAttribute("pedido_actual", 0);
             response.sendRedirect("/Multinivel/pagina_Lobby.jsp");
         }else{
+            request.getSession().setAttribute("anterior", "login.html");
             request.getSession().setAttribute("mensajeError", ex);
             response.sendRedirect("/Multinivel/pagina_Error.jsp");
         }
