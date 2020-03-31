@@ -73,7 +73,7 @@ public class ClienteDAO {
         prepStmt.executeUpdate();
         prepStmt.close();
 
-        String prStatement = "{ call PR_CREAR_USUARIO(?, ?) }";
+        String prStatement = "{ call PK_GESTION_CLIENTE.PR_CREAR_USUARIO(?, ?) }";
         CallableStatement caStatement = conexion.prepareCall(prStatement);
         caStatement.setString(1, Character.toString(cliente.getTipoId()));
         caStatement.setString(2, cliente.getIdCliente());

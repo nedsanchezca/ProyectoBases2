@@ -12,6 +12,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Types;
 import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -36,7 +37,7 @@ public class PedidoDAO {
         try {
             //Tomar la conexión
             Connection conexion = locator.getConexion();
-            String prStatement = "{ call PR_AGREGAR_PRODUCTO(?, ?, ?) }";
+            String prStatement = "{ call PK_GESTION_PEDIDO.PR_AGREGAR_PRODUCTO(?, ?, ?) }";
             CallableStatement caStatement = conexion.prepareCall(prStatement);
             caStatement.setInt(1, codInventario);
             caStatement.setInt(2, cantidad);
@@ -55,7 +56,7 @@ public class PedidoDAO {
         try {
             //Tomar la conexión
             Connection conexion = locator.getConexion();
-            String prStatement = "{ call PR_BORRAR_PRODUCTO(?, ?) }";
+            String prStatement = "{ call PK_GESTION_PEDIDO.PR_BORRAR_PRODUCTO(?, ?) }";
             CallableStatement caStatement = conexion.prepareCall(prStatement);
             caStatement.setInt(1, codInventario);
             caStatement.setInt(2, pedido);
@@ -318,6 +319,23 @@ public class PedidoDAO {
             return error;
         }
     }
+    
+    public int totalPedido(int pedido, Mensaje exe){
+        try {
+            //Tomar la conexión
+            Connection conexion = locator.getConexion();
+            String prStatement = "{? = call PK_GESTION_PEDIDO.FU_TOTALIZARCARRITO(?) }";
+            CallableStatement caStatement = conexion.prepareCall(prStatement);
+            caStatement.registerOutParameter(1,Types.INTEGER);
+            caStatement.setInt(2,pedido);
+            caStatement.execute();
+            return caStatement.getInt(1);
+        } catch (SQLException ex) {
+            exe.setMensaje(ex.getLocalizedMessage());
+            return -1;
+        }
+    }
+
     
     public void setLocator(ServiceLocator locator){
         this.locator = locator;

@@ -190,7 +190,7 @@ public class RepresentanteDAO {
         try {
             //Tomar la conexión
             Connection conexion = locator.getConexion();
-            String prStatement = "{ call PR_CAMBIAR_RVENTAS(?, ?, ?, ?) }";
+            String prStatement = "{ call PK_GESTION_CLIENTE.PR_CAMBIAR_RVENTAS(?, ?, ?, ?) }";
             CallableStatement caStatement = conexion.prepareCall(prStatement);
             caStatement.setString(1, Character.toString(cliente.getTipoId()));
             caStatement.setString(2, cliente.getIdCliente());
