@@ -24,6 +24,7 @@ AS
         SELECT /*N_NOMBRE, N_APELLIDO,*/ RV.F_NUMERO_ID
         FROM PERSONA P, REP_VENTAS RV, PEDIDO PE
         WHERE   p.k_numero_id = rv.f_numero_id AND
+                rv.f_numero_id = rv.f_id_rep_capatador AND
                 d_fecha >= TO_DATE('12.08.2019', 'DD.MM.YYYY') AND d_fecha <= SYSDATE
         GROUP BY RV.F_NUMERO_ID/*, N_NOMBRE, N_APELLIDO*/;
     lc_captados c_captados%ROWTYPE;
