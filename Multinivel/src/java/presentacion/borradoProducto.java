@@ -49,17 +49,8 @@ public class borradoProducto extends HttpServlet {
             request.getSession().setAttribute("pedido_actual", nPedido);
             response.sendRedirect("/Multinivel/formulario_Venta.jsp");
         }else{
-            try (PrintWriter out = response.getWriter()) {
-                out.println("<meta http-equiv='refresh' content='3;URL=formulario_Venta.html'>");
-                out.println("<html>");
-                out.println("<head>");
-                out.println("<title>Servlet testing</title>");            
-                out.println("</head>");
-                out.println("<body>");
-                out.println("<h1>Servlet testing at " + ex+ "</h1>");
-                out.println("</body>");
-                out.println("</html>");
-            }
+            request.getSession().setAttribute("mensajeError", ex);
+            response.sendRedirect("/Multinivel/pagina_Error.jsp");
         }
     }
 

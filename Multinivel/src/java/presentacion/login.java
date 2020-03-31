@@ -84,18 +84,8 @@ public class login extends HttpServlet {
             request.getSession().setAttribute("pedido_actual", 0);
             response.sendRedirect("/Multinivel/pagina_Lobby.jsp");
         }else{
-            try (PrintWriter out = response.getWriter()) {
-                /* TODO output your page here. You may use following sample code. */
-                out.println("<meta http-equiv='refresh' content='3;URL=login.html'>");
-                out.println("<html>");
-                out.println("<head>");
-                out.println("<title>Servlet testing</title>");            
-                out.println("</head>");
-                out.println("<body>");
-                out.println("<h1>Servlet testing at " + ex+ "</h1>");
-                out.println("</body>");
-                out.println("</html>");
-            }
+            request.getSession().setAttribute("mensajeError", ex);
+            response.sendRedirect("/Multinivel/pagina_Error.jsp");
         }
         
     }

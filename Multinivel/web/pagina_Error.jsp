@@ -1,3 +1,9 @@
+<meta http-equiv='refresh' content='3;URL=login.html'>
+
+<%@page import="util.Mensaje"%>
+<%@page import="util.ServiceLocator"%>
+<%@page import="presentacion.login"%>
+<%@page contentType="text/html" pageEncoding="UTF-8"%>
 <!DOCTYPE html>
 <html lang="en">
 
@@ -27,13 +33,16 @@
     </nav>
     
     <section class="imagenContenedora">
-        <img src="/Multinivel/web/images/logo.png" alt="logoPagina" class="imagenError" >
+        <img src="images/logo.png" alt="logoPagina" class="imagenError" >
     </section>
     <center>
-        <h1>Error en la base de datos</h1>
+        <h1>Error</h1>
     </center>
     <center>
-        <p class="mensajeError">Este es el mensaje de Error </p>
+        <%
+            String mensaje =  request.getSession().getAttribute("mensajeError").toString();
+            out.println(mensaje);
+        %>
     </center>
 
     <script src="vendor/jquery/jquery-3.2.1.min.js"></script>
