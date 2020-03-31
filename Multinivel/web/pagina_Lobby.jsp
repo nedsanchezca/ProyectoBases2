@@ -92,8 +92,7 @@
                         </div>
                     </div>
                     <div class="profile-userbuttons">
-                        <button type="button" class="btn btn-success btn-sm">Cartera</button>
-                        <button type="button" class="btn btn-danger btn-sm">Catalogo</button>
+                        <a href="#aquivalacosa" class="btn btn-success btn-sm">Cambiar Representante</a>
                     </div>
                     <div class="profile-usermenu">
                         <ul class="nav">
