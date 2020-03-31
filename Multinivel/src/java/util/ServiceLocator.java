@@ -23,7 +23,7 @@ public class ServiceLocator {
 	public ServiceLocator(){
 	    try {
                 DriverManager.registerDriver (new oracle.jdbc.driver.OracleDriver());
-                conexion = DriverManager.getConnection("jdbc:oracle:thin:@localhost:1521:orcl","natame","natame");
+                conexion = DriverManager.getConnection("jdbc:oracle:thin:@localhost:1521:xe","natame","natame");
 	        conexion.setAutoCommit(false);
 	    } catch (Exception e) {
                 System.out.print(e);
@@ -37,7 +37,7 @@ public class ServiceLocator {
 	public ServiceLocator(String usr, String pass,Mensaje mensaje){
 	    try {
                 DriverManager.registerDriver (new oracle.jdbc.driver.OracleDriver());
-                conexion = DriverManager.getConnection("jdbc:oracle:thin:@localhost:1521:orcl",usr,pass);
+                conexion = DriverManager.getConnection("jdbc:oracle:thin:@localhost:1521:xe",usr,pass);
 	        conexion.setAutoCommit(false);
 	    } catch (Exception e) {
                 mensaje.setMensaje(e.getLocalizedMessage());
